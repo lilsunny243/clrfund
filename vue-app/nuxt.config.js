@@ -70,9 +70,7 @@ export default {
 
   apollo: {
     clientConfigs: {
-      default: {
-        httpEndpoint: 'https://api.thegraph.com/subgraphs/name/graphprotocol/everest',
-      }
+      default: '@/plugins/apollo-config.js'
     }
   },
   /*

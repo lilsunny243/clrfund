@@ -146,8 +146,8 @@ export const mutations = {
 export const actions = {
   async getProjects({ commit }) {
     console.time("getProjects");
-    console.log(this.app.apolloProvider.defaultClient);
-    const response = await this.app.apolloProvider.defaultClient.query(GET_BY_CATEGORY);
+    const client = this.app.apolloProvider.defaultClient;
+    const response = await client.query(GET_BY_CATEGORY);
 
     console.log("response", response);
 
