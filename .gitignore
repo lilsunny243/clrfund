@@ -1,3 +1,6 @@
 node_modules
 vue-app/.env
 vue-app/gundata/
+
+# Local Netlify folder
+.netlify
