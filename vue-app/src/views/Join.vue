@@ -533,9 +533,8 @@
               <div class="summary">
                 <h4 class="read-only-title">Thumbnail</h4>
                 <div class="data">{{form.image.thumbnailHash}} </div>
-              </div>            </div>  
-            <!-- {{form}}-->
-            <!--TODO: this will be an on-chain transaction so double check all info and links are correct as it will cost you you to change it -->
+              </div>
+            </div>  
           </div>
         </div>
       </div>
