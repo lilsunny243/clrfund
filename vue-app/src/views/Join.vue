@@ -558,10 +558,16 @@ import ButtonRow from '@/components/ButtonRow.vue'
 import IpfsForm from '@/components/IpfsForm.vue'
 import ProjectProfile from '@/components/ProjectProfile.vue'
 import Warning from '@/components/Warning.vue'
-
 import { SET_RECIPIENT_DATA } from '@/store/mutation-types'
-import { RecipientApplicationData, formToProjectInterface } from '@/api/recipient-registry-optimistic'
+import {
+  RecipientApplicationData,
+  formToProjectInterface,
+  addRecipient,
+  getRequestId,
+  getRegistryInfo,
+} from '@/api/recipient-registry-optimistic'
 import { Project } from '@/api/projects'
+import { waitForTransaction } from '@/utils/contracts'
 import { markdown } from '@/utils/markdown'
 
 @Component({
@@ -657,6 +663,9 @@ export default class JoinView extends mixins(validationMixin) {
   steps: string[] = []
   stepNames: string[] = []
   showSummaryPreview = false
+  registryInfo
+  recipientId: string | null = null
+  submissionTxHash: string | null = null
 
   created() {
     const steps = Object.keys(this.form)
@@ -680,13 +689,15 @@ export default class JoinView extends mixins(validationMixin) {
     if (this.currentStep < 0) {
       this.$router.push({ name: 'join' })
     }
-    // "Next" button restricts forward navigation via validation, and
-    // eventually updates the `furthestStep` tracker when valid and clicked/tapped.
-    // If URL step is ahead of furthest, navigate back to furthest
-    // if (this.currentStep > this.form.furthestStep) {
-    //   this.$router.push({ name: 'joinStep', params: { step: steps[this.form.furthestStep] }})
-    // }
 
+
+    if (this.currentStep === 5) {
+      // If on summary page:
+      // Fetch registry info
+      this.registryInfo = (async () => (await getRegistryInfo(this.$store.state.recipientRegistryAddress)))()
+    }
+
+    // Dummy data for dev testing
     if (process.env.NODE_ENV === 'development') {
       this.form = {
         project: {
@@ -744,7 +755,34 @@ export default class JoinView extends mixins(validationMixin) {
     return step <= this.form.furthestStep
   }
 
+  async addRecipient() {
+    let submissionTxReceipt
+    try {
+      submissionTxReceipt = await waitForTransaction(
+        addRecipient(
+          this.$store.state.recipientRegistryAddress,
+          this.projectInterface,
+          this.registryInfo.deposit,
+          this.$store.state.currentUser.walletProvider.getSigner(),
+        ),
+        (hash) => {
+          console.log(`Tx Hash: ${hash}`) /* eslint-disable-line no-console */
+          this.submissionTxHash = hash},
+      )
+    } catch (error) {
+      // this.submissionTxError = error.message
+      return
+    }
+    this.recipientId = getRequestId(submissionTxReceipt, this.$store.state.recipientRegistryAddress)
+  }
+
   saveFormData(updateFurthest?: boolean): void {
+    if (updateFurthest && this.currentStep === 5) {
+      // If submitting final step:
+      // Pass form data to contract as Project object
+      this.addRecipient()
+      // Trigger email
+    }
     if (updateFurthest && this.currentStep + 1 > this.form.furthestStep) {
       this.form.furthestStep = this.currentStep + 1
     }

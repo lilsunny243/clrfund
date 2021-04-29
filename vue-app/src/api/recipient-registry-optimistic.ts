@@ -197,7 +197,7 @@ export interface RecipientData {
 
 export async function addRecipient(
   registryAddress: string,
-  recipientData: RecipientData,
+  recipientData: RecipientData | Project,
   deposit: BigNumber,
   signer: Signer,
 ): Promise<TransactionResponse> {

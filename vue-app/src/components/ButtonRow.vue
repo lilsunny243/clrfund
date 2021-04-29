@@ -81,8 +81,9 @@ export default class ButtonRow extends Vue {
     })
   }
   handleSubmit(): void {
-    alert('submitted')
     // Submit form data
+    this.callback(true)
+    alert('submitted')
     // Clear form store/state data
   }
   // Pushing to router stack destroys local form state
