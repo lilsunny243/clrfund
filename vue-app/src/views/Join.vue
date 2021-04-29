@@ -68,10 +68,6 @@
         </router-link>
       </div>
       <div class="form-area">
-        <div v-if="currentStep === 5" class="application">
-          <div class="btn-primary" style="width: fit-content;" @click="togglePreview">{{ showSummaryPreview ? 'Close' : 'Preview' }}</div>
-          <project-profile v-if="showSummaryPreview" :project="projectInterface" :previewMode="true" class="project-details" />
-        </div>
         <div class="application">
           <form>
             <div v-if="currentStep === 0">
@@ -428,7 +424,14 @@
           </form>
           <div v-if="currentStep === 5" id="summary">
             <h2 class="step-title">Review your information</h2>
-            <warning style="margin-bottom: 1rem;" message="This information will be stored in a smart contract, so please review carefully. There’s a transaction fee for every edit once you’ve sent your application." /> 
+            <warning style="margin: 2rem 0;" message="This information will be stored in a smart contract, so please review carefully. There’s a transaction fee for every edit once you’ve sent your application." /> 
+            <div v-if="currentStep === 5" class="application-preview">
+              <div :class="showSummaryPreview ? 'project-preview-open' : 'project-preview'">
+                <div :class="showSummaryPreview ? 'preview-subtitle' : 'step-subtitle'" style="margin: 0; font-weight: 600;">Preview your project</div>
+                <div class="btn-primary" style="width: fit-content;" @click="togglePreview">{{ showSummaryPreview ? 'Close' : 'Preview' }}</div>
+              </div>
+              <project-profile v-if="showSummaryPreview" :project="projectInterface" :previewMode="true" class="project-details" />
+            </div>
             <div class="form-background">
               <div class="summary-section-header">
                 <h3 class="step-subtitle">About the project</h3>
@@ -1044,6 +1047,38 @@ export default class JoinView extends mixins(validationMixin) {
   }
 }
 
+.application-preview {
+  /* height: 100%; */
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 1.5rem;
+  border-radius: 0.5rem;
+  margin: 2rem 0;
+  /* border: 1px solid $highlight-color; */
+  background: $bg-light-color;
+}
+
+
+.project-preview {
+  /* height: 100%; */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  @media (min-width: $breakpoint-m) {
+  }
+}
+
+.project-preview-open {
+  /* height: 100%; */
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  @media (min-width: $breakpoint-m) {
+  }
+}
+
+
 .link {
   font-family: Inter;
   font-size: 16px;
@@ -1254,6 +1289,10 @@ export default class JoinView extends mixins(validationMixin) {
   margin: 0.5rem 0;
   font-family: "Glacial Indifference", sans-serif;
   font-size: 1.5rem;
+}
+
+.preview-subtitle {
+  display: none;
 }
 
 .edit-button {
