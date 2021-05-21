@@ -15,6 +15,7 @@
           <a href="https://github.com/clrfund/monorepo/" target="_blank" rel="noopener">GitHub</a> -->
       </div>
       <div id="content" :class="{ padded: !isSidebarCollapsed }">
+        <user-status />
         <router-view :key="$route.path" />
       </div>
     </div>
@@ -25,7 +26,7 @@
 import Vue from 'vue'
 import Component from 'vue-class-component'
 import { Watch } from 'vue-property-decorator'
-
+import UserStatus from '@/components/UserStatus.vue'
 import { recipientRegistryType } from '@/api/core'
 // import Cart from '@/components/Cart.vue'
 // import WalletWidget from '@/components/WalletWidget.vue'
@@ -47,7 +48,7 @@ import { LOAD_USER_INFO, LOAD_ROUND_INFO } from '@/store/action-types'
       },
     ],
   },
-  components: { RoundInformation, NavBar, Cart },
+  components: { RoundInformation, NavBar, Cart, UserStatus },
 })
 export default class App extends Vue {
   created() {
