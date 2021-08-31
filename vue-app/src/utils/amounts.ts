@@ -11,9 +11,9 @@ export function renderTokenAmount(
   unitName: BigNumberish = 18
 ): string {
   // Convert smaller units (really large integers) to whole AOE balance (human readable floats)
-  const unitsFormatted: string = formatUnits(amount, unitName).toString()
-  // Parse BigNumber into float, fix to maxDecimals, then parse again to remove any trailing zeros
-  const result = parseFloat(parseFloat(unitsFormatted).toFixed(maxDecimals))
+  const formatted: string = formatUnits(amount, unitName).toString()
+  // Parse string into float, fix to maxDecimals, then parse again to remove any trailing zeros
+  const result = parseFloat(parseFloat(formatted).toFixed(maxDecimals))
   // Return "commified" result for human readability
   return commify(result)
 }
