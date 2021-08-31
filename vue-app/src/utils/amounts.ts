@@ -10,27 +10,10 @@ export function renderTokenAmount(
   maxDecimals: number,
   unitName: BigNumberish = 18
 ): string {
-  let result: string
-
   // Convert smaller units (really large integers) to whole AOE balance (human readable floats)
-  let unitsFormatted: string = formatUnits(amount, unitName).toString()
-  // Whole numbers return with single trailing zero decimal; remove this
-  if (unitsFormatted.substring(unitsFormatted.length - 2) === '.0') {
-    unitsFormatted = unitsFormatted.substring(0, unitsFormatted.length - 2)
-  }
-  // Truncate decimals
-  const decimalIndex = unitsFormatted.indexOf('.')
-  if (decimalIndex < 0) {
-    result = unitsFormatted
-  } else {
-    const leftOfDecimal = unitsFormatted.substring(0, decimalIndex)
-    const rightOfDecimal = unitsFormatted.substring(decimalIndex + 1)
-    if (rightOfDecimal.length > maxDecimals) {
-      result = leftOfDecimal + '.' + rightOfDecimal.substring(0, maxDecimals)
-    } else {
-      result = unitsFormatted
-    }
-  }
+  const unitsFormatted: string = formatUnits(amount, unitName).toString()
+  // Parse BigNumber into float, fix to maxDecimals, then parse again to remove any trailing zeros
+  const result = parseFloat(parseFloat(unitsFormatted).toFixed(maxDecimals))
   // Return "commified" result for human readability
   return commify(result)
 }
