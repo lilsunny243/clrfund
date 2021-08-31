@@ -82,7 +82,7 @@ export default class WalletWidget extends Vue {
     if (balance === null || typeof balance === 'undefined') {
       return null
     }
-    return renderTokenAmount(balance, 2)
+    return renderTokenAmount(balance, 5)
   }
 
   async mounted() {
