@@ -5,7 +5,7 @@
       <div id="hero">
         <img src="@/assets/moon.png" id="moon" />
         <div class="image-wrapper">
-          <img src="@/assets/docking.png" />
+          <img src="@/assets/desktop/docking.png" />
         </div>
         <div>
           <div class="hero-content">
