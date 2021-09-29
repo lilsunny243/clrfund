@@ -7,7 +7,7 @@
       <div class="gradient">
         <img src="@/assets/moon.png" class="moon" />
         <div class="hero">
-          <img src="@/assets/newrings.png" />
+          <img src="@/assets/optimized/newrings.png" />
         </div>
       </div>
       <div class="content">

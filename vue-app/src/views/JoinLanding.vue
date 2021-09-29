@@ -2,7 +2,7 @@
   <div>
     <div class="gradient">
       <div class="hero">
-        <img src="@/assets/core.png" />
+        <img src="@/assets/optimized/core.png" />
       </div>
     </div>
 

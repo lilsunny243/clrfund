@@ -2,7 +2,7 @@
   <div class="projects">
     <div class="round-info">
       <div class="image-wrapper">
-        <img src="@/assets/docking.png" height="100%" />
+        <img src="@/assets/optimized/docking.png" height="100%" />
       </div>
       <template v-if="currentRound">
         <div class="round">

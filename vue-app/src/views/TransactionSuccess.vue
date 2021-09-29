@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <div class="image-wrapper">
-      <img class="docking" src="@/assets/docking.png" />
+      <img class="docking" src="@/assets/optimized/docking.png" />
       <img class="money" src="@/assets/money.gif" />
       <img class="money" src="@/assets/confetti.gif" />
     </div>

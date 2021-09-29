@@ -5,7 +5,7 @@
       <div id="hero">
         <img src="@/assets/moon.png" id="moon" />
         <div class="image-wrapper">
-          <img src="@/assets/desktop/docking.png" />
+          <img src="@/assets/optimized/docking.png" />
         </div>
         <div>
           <div class="hero-content">
@@ -49,7 +49,7 @@
       <div id="section-how-it-works">
         <div class="wormhole-wrapper desktop-l">
           <img
-            src="@/assets/wormhole.png"
+            src="@/assets/optimized/wormhole.png"
             alt="Image of spaceships funneling through a wormhole and getting bigger"
             class="wormhole"
           />
@@ -61,7 +61,7 @@
             just those with the wealthiest backers.
           </p>
           <img
-            src="@/assets/wormhole.png"
+            src="@/assets/optimized/wormhole.png"
             alt="Image of spaceships funneling through a wormhole and getting bigger"
           />
           <h2>How it works</h2>
