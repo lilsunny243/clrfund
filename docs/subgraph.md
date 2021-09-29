@@ -1,13 +1,27 @@
-# Running it in a local graph node
+# Running the subgraph in a local env
+
+## Deps
 
 - Install Docker from https://docs.docker.com/engine/install/
 - Install Docker Compose from https://docs.docker.com/compose/install/
 
-Follow the official instructions https://thegraph.com/docs/developer/quick-start
+## Clone the thegraph repo
 
-## Adjusts to use it with Hardhat
+Official instructions: https://thegraph.com/docs/developer/quick-start
 
-Inside the graph node folder:
+```sh
+git clone https://github.com/graphprotocol/graph-node/
+```
+
+## Adjust to use it with Hardhat
+
+Note: before running the graph node, ensure your local Hardhat node is running. Inside the clr.fund repo:
+
+```sh
+yarn start:node
+```
+
+Inside the graph node repo:
 
 ```sh
 cd graph-node/docker
@@ -16,10 +30,10 @@ cd graph-node/docker
 Modify the `docker-compose.yml` file and set the correct Hardhat port been used
 
 ```yml
-ethereum: "mainnet:http://host.docker.internal:18545"
+ethereum: "hardhat:http://host.docker.internal:18545"
 
 # in Linux machines instead of `host.docker.internal` you should have the host IP address
-ethereum: "mainnet:http://<IP>:18545"
+ethereum: "hardhat:http://<IP>:18545"
 ```
 
 Run the node:
@@ -34,25 +48,22 @@ In case you want to stop the node and start it without any subgraph that could h
 rm -rf data/postgres
 ```
 
-## Deply the clr.fund subgraph
+## Deploy the clr.fund subgraph
 
 ```sh
-git clone https://github.com/daodesigner/clrfund-deployer
+# in a different terminal, go back to the clrfund repo
+cd clrfund
 
-cd clrfund-deployer/subgraph
+# this will build the subgraph using the hardhat configs and then will deploy it into the local graph node
+yarn start:subgraph
 ```
 
-Ensure that inside `subgraph.yaml`, all mentions of the network coincide with the network used in the `docker-compose.yml` from the graph node. In this example, `mainnet`.
-Also, use the corresponding FundingRound deployed address in the Hardhat node.
+---
 
-```yml
-network: mainnet
-  source:
-    address: <FUNDINGROUND_FACTORY_ADDRESS>
-    abi: FundingRoundFactory
-    startBlock: 0
-```
+## Common errors
 
-### Error `trace_filter RPC call failed`
+- **Error `trace_filter RPC call failed`**: any `callHandlers` or `blockHandlers` definition in the `subgraph.yaml` file won't work with Hardhat since it doesn't have trace support.
 
-Any `callHandlers` or `blockHandlers` definition in this file won't work with Hardhat since it doesn't have trace support.
+- **M1 Macbook Error**: When using docker with the M1 Apple products you will need to use a different image in the docker-compose. Fix found here: https://github.com/graphprotocol/graph-node/issues/2325. To implement fix, go to `docker-compose.yml` in `cd graph-node/docker` and change the `image` to: `image: graphprotocol/graph-node:2c23cce` for the graph-node service
+
+- **Subgraph Queries returning null**: Check that your .env is setup properly with the right VUE_APP_SUBGRAPH_URL. If locally developing use: VUE_APP_SUBGRAPH_URL=http://localhost:8000/subgraphs/name/daodesigner/clrfund
