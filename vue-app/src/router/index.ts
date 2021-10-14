@@ -28,10 +28,13 @@ import TransactionSuccess from '@/views/TransactionSuccess.vue'
 
 Vue.use(VueRouter)
 
+const txHashRegEx = `0x[0-9a-f]{64}`
+const round = `/:round(0x[0-9a-f]{40})?`
+
 //TODO: create a new route that kaes funding factory address as a param
 const routes = [
   {
-    path: '/',
+    path: round,
     name: 'landing',
     component: Landing,
     meta: {
@@ -39,7 +42,7 @@ const routes = [
     },
   },
   {
-    path: '/projects',
+    path: `${round}/projects`,
     name: 'projects',
     component: ProjectList,
     meta: {
@@ -47,12 +50,12 @@ const routes = [
     },
   },
   {
-    path: '/project/:id',
+    path: `${round}/project/:id`,
     name: 'project',
     component: ProjectView,
   },
   {
-    path: '/round-information',
+    path: `${round}/round-information`,
     name: 'round-information',
     component: RoundInformation,
     meta: {
@@ -60,7 +63,7 @@ const routes = [
     },
   },
   {
-    path: '/rounds',
+    path: `${round}/rounds`,
     name: 'rounds',
     component: RoundList,
     meta: {
@@ -68,7 +71,7 @@ const routes = [
     },
   },
   {
-    path: '/round/:address',
+    path: `${round}/round/:address`,
     name: 'round',
     component: ProjectList,
     meta: {
@@ -76,7 +79,7 @@ const routes = [
     },
   },
   {
-    path: '/about',
+    path: `${round}/about`,
     name: 'about',
     component: About,
     meta: {
@@ -84,7 +87,7 @@ const routes = [
     },
   },
   {
-    path: '/about/maci',
+    path: `${round}/about/maci`,
     name: 'about-maci',
     component: AboutMaci,
     meta: {
@@ -92,7 +95,7 @@ const routes = [
     },
   },
   {
-    path: '/about/sybil-resistance',
+    path: `${round}/about/sybil-resistance`,
     name: 'about-sybil-resistance',
     component: AboutSybilResistance,
     meta: {
@@ -100,7 +103,7 @@ const routes = [
     },
   },
   {
-    path: '/about/layer-2',
+    path: `${round}/about/layer-2`,
     name: 'about-layer-2',
     component: AboutLayer2,
     meta: {
@@ -108,7 +111,7 @@ const routes = [
     },
   },
   {
-    path: '/about/how-it-works',
+    path: `${round}/about/how-it-works`,
     name: 'about-how-it-works',
     component: AboutHowItWorks,
     meta: {
@@ -116,7 +119,7 @@ const routes = [
     },
   },
   {
-    path: '/about/how-it-works/contributors',
+    path: `${round}/about/how-it-works/contributors`,
     name: 'about-how-it-works-contributors',
     component: AboutContributors,
     meta: {
@@ -124,7 +127,7 @@ const routes = [
     },
   },
   {
-    path: '/about/how-it-works/recipients',
+    path: `${round}/about/how-it-works/recipients`,
     name: 'about-how-it-works-recipients',
     component: AboutRecipients,
     meta: {
@@ -132,7 +135,7 @@ const routes = [
     },
   },
   {
-    path: '/about/public-goods',
+    path: `${round}/about/public-goods`,
     name: 'about-public-goods',
     component: AboutPublicGoods,
     meta: {
@@ -140,7 +143,7 @@ const routes = [
     },
   },
   {
-    path: '/about/quadratic-funding',
+    path: `${round}/about/quadratic-funding`,
     name: 'about-quadratic-funding',
     component: AboutQuadraticFunding,
     meta: {
@@ -148,7 +151,7 @@ const routes = [
     },
   },
   {
-    path: '/about/decentralization',
+    path: `${round}/about/decentralization`,
     name: 'about-decentralization',
     component: AboutDecentralization,
     meta: {
@@ -156,7 +159,7 @@ const routes = [
     },
   },
   {
-    path: '/recipients',
+    path: `${round}/recipients`,
     name: 'recipients',
     component: RecipientRegistryView,
     meta: {
@@ -164,7 +167,7 @@ const routes = [
     },
   },
   {
-    path: '/verify',
+    path: `${round}/verify`,
     name: 'verify',
     component: VerifyLanding,
     meta: {
@@ -172,7 +175,7 @@ const routes = [
     },
   },
   {
-    path: '/verify/success/:hash?',
+    path: `${round}/verify/success/:hash?`,
     name: 'verified',
     component: Verified,
     meta: {
@@ -180,7 +183,7 @@ const routes = [
     },
   },
   {
-    path: '/verify/:step',
+    path: `${round}/verify/:step`,
     name: 'verify-step',
     component: VerifyView,
     meta: {
@@ -188,7 +191,7 @@ const routes = [
     },
   },
   {
-    path: '/join',
+    path: `${round}/join`,
     name: 'join',
     component: JoinLanding,
     meta: {
@@ -196,7 +199,7 @@ const routes = [
     },
   },
   {
-    path: '/join/success/:hash',
+    path: `${round}/join/success/:hash`,
     name: 'project-added',
     component: ProjectAdded,
     meta: {
@@ -204,7 +207,7 @@ const routes = [
     },
   },
   {
-    path: '/join/:step',
+    path: `${round}/join/:step`,
     name: 'join-step',
     component: JoinView,
     meta: {
@@ -213,7 +216,7 @@ const routes = [
   },
 
   {
-    path: '/cart',
+    path: `${round}/cart`,
     name: 'cart',
     component: CartView,
     meta: {
@@ -221,7 +224,7 @@ const routes = [
     },
   },
   {
-    path: '/transaction-success/:type/:hash?',
+    path: `${round}/transaction-success/:type/:hash?`,
     name: 'transaction-success',
     component: TransactionSuccess,
   },
