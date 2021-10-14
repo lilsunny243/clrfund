@@ -85,35 +85,30 @@ import { SET_CURRENT_USER } from '@/store/mutation-types'
 })
 export default class App extends Vue {
   intervals: { [key: string]: any } = {}
-
-  //NOTE: why are all these called on the landing page? makes it heavy to load
-  created() {
-    this.intervals.round = setInterval(() => {
-      this.$store.dispatch(LOAD_ROUND_INFO)
-    }, 60 * 1000)
-    this.intervals.recipient = setInterval(async () => {
-      await this.$store.dispatch(LOAD_RECIPIENT_REGISTRY_INFO)
-    }, 60 * 1000)
-    this.intervals.user = setInterval(() => {
-      this.$store.dispatch(LOAD_USER_INFO)
-    }, 60 * 1000)
+  async created(): Promise<void> {
+    await this.selectRound(await this.roundAddress())
   }
 
-  //NOTE: why are all these called on the landing page?
-  async mounted() {
-    //TODO: update to take factory address as a parameter, default to env. variable
-    //TODO: SELECT_ROUND action also commits SET_CURRENT_FACTORY_ADDRESS on this action, should be passed optionally and default to env variable
-    const roundAddress =
-      this.$store.state.currentRoundAddress || (await getCurrentRound())
-    await this.$store.dispatch(SELECT_ROUND, roundAddress)
-    this.$store.dispatch(LOAD_ROUND_INFO)
+  // TODO: SELECT_ROUND action also commits SET_CURRENT_FACTORY_ADDRESS on this action, should be passed optionally and default to env variable
+  async selectRound(_roundAddress): Promise<void> {
+    await this.$store.dispatch(SELECT_ROUND, _roundAddress)
+    await this.$store.dispatch(LOAD_ROUND_INFO)
     await this.$store.dispatch(LOAD_RECIPIENT_REGISTRY_INFO)
   }
 
-  beforeDestroy() {
-    for (const interval of Object.keys(this.intervals)) {
-      clearInterval(this.intervals[interval])
-    }
+  async roundAddress(): Promise<string> {
+    return (
+      this.$route.params.round ||
+      this.$store.state.currentRoundAddress ||
+      (await getCurrentRound())
+    )
+  }
+
+  @Watch('$route.params')
+  async updateRound(): Promise<void> {
+    if (this.$route.params.round === this.$store.state.currentRoundAddress)
+      return
+    await this.selectRound(await this.roundAddress())
   }
 
   @Watch('$web3.user')
