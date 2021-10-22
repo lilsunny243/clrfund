@@ -9,7 +9,7 @@
     <round-status-banner />
     <back-link
       :alsoShowOnMobile="true"
-      to="/projects"
+      :to="backToProjectsLink"
       text="← Back to projects"
     />
 
@@ -221,6 +221,16 @@ export default class JoinLanding extends Vue {
     return this.spacesRemaining === 1
       ? '1 space'
       : `${this.spacesRemaining} spaces`
+  }
+
+  get backToProjectsLink(): string {
+    const currentRound = this.$store.state.currentRound
+
+    if (!currentRound) {
+      return ''
+    }
+
+    return `/round/${currentRound.fundingRoundAddress}/projects`
   }
 
   openTooltip(): void {

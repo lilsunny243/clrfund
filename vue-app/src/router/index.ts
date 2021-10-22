@@ -25,6 +25,7 @@ import VerifyView from '../views/Verify.vue'
 import RecipientRegistryView from '@/views/RecipientRegistry.vue'
 import CartView from '@/views/Cart.vue'
 import TransactionSuccess from '@/views/TransactionSuccess.vue'
+import Round from '@/views/Round.vue'
 
 Vue.use(VueRouter)
 
@@ -39,17 +40,31 @@ const routes = [
     },
   },
   {
-    path: '/projects',
-    name: 'projects',
-    component: ProjectList,
+    path: '/round/:roundIndex',
+    component: Round,
     meta: {
-      title: 'Project List',
+      title: 'Round',
     },
-  },
-  {
-    path: '/project/:id',
-    name: 'project',
-    component: ProjectView,
+    children: [
+      {
+        path: '',
+        name: 'round',
+        redirect: { name: 'projects' },
+      },
+      {
+        path: 'projects',
+        name: 'projects',
+        component: ProjectList,
+        meta: {
+          title: 'Project List',
+        },
+      },
+      {
+        path: 'project/:id',
+        name: 'project',
+        component: ProjectView,
+      },
+    ],
   },
   {
     path: '/round-information',
@@ -65,14 +80,6 @@ const routes = [
     component: RoundList,
     meta: {
       title: 'Rounds',
-    },
-  },
-  {
-    path: '/round/:address',
-    name: 'round',
-    component: ProjectList,
-    meta: {
-      title: 'Project List for Round',
     },
   },
   {

@@ -149,7 +149,7 @@ export default class ProjectList extends Vue {
   async created() {
     //TODO: update to take factory address as a parameter, default to env. variable
     const roundAddress =
-      this.$route.params.address ||
+      this.$route.params.roundIndex ||
       this.$store.state.currentRoundAddress ||
       (await getCurrentRound())
     if (

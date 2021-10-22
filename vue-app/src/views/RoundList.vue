@@ -5,7 +5,7 @@
       <links
         v-if="round.address"
         class="round-name"
-        :to="{ name: 'round', params: { address: round.address } }"
+        :to="`/round/${round.address}/projects`"
       >
         Round {{ round.index }}
       </links>

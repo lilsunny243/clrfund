@@ -1,6 +1,6 @@
 <template>
   <div id="app" class="wrapper">
-    <nav-bar :in-app="isInApp" />
+    <nav-bar :inApp="isInApp" />
     <div id="content-container">
       <div
         id="sidebar"
@@ -98,7 +98,7 @@ export default class App extends Vue {
 
   async roundAddress(): Promise<string> {
     return (
-      this.$route.params.round ||
+      this.$route.params.roundIndex ||
       this.$store.state.currentRoundAddress ||
       (await getCurrentRound())
     )
@@ -106,7 +106,7 @@ export default class App extends Vue {
 
   @Watch('$route.params')
   async updateRound(): Promise<void> {
-    if (this.$route.params.round === this.$store.state.currentRoundAddress)
+    if (this.$route.params.roundIndex === this.$store.state.currentRoundAddress)
       return
     await this.selectRound(await this.roundAddress())
   }
@@ -176,7 +176,17 @@ export default class App extends Vue {
 
   get backLinkRoute(): string {
     const route = this.$route.name || ''
-    return route.includes('about-') ? '/about' : '/projects'
+    return route.includes('about-') ? '/about' : this.backToProjectsLink
+  }
+
+  get backToProjectsLink(): string {
+    const currentRound = this.$store.state.currentRound
+
+    if (!currentRound) {
+      return ''
+    }
+
+    return `/round/${currentRound.fundingRoundAddress}/projects`
   }
 
   get backLinkText(): string {
