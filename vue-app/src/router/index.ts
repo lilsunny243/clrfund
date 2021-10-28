@@ -40,7 +40,7 @@ const routes = [
     },
   },
   {
-    path: '/round/:roundIndex',
+    path: '/round/:roundIndex?',
     component: Round,
     meta: {
       title: 'Round',
@@ -49,11 +49,6 @@ const routes = [
       {
         path: '',
         name: 'round',
-        redirect: { name: 'projects' },
-      },
-      {
-        path: 'projects',
-        name: 'projects',
         component: ProjectList,
         meta: {
           title: 'Project List',

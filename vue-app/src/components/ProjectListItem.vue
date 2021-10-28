@@ -1,7 +1,12 @@
 <template>
   <div class="project-item">
     <div>
-      <links :to="{ name: 'project', params: { id: project.id } }">
+      <links
+        :to="{
+          name: 'project',
+          params: { roundIndex: roundAddress, id: project.id },
+        }"
+      >
         <div class="project-image">
           <img :src="projectImageUrl" :alt="project.name" />
           <div class="tag">{{ project.category }}</div>
@@ -9,18 +14,33 @@
       </links>
       <div class="project-info">
         <div class="project-name">
-          <links :to="{ name: 'project', params: { id: project.id } }">
+          <links
+            :to="{
+              name: 'project',
+              params: { roundIndex: roundAddress, id: project.id },
+            }"
+          >
             {{ project.name }}
           </links>
         </div>
-        <links :to="{ name: 'project', params: { id: project.id } }">
+        <links
+          :to="{
+            name: 'project',
+            params: { roundIndex: roundAddress, id: project.id },
+          }"
+        >
           <div class="project-description">{{ project.tagline }}</div>
         </links>
       </div>
     </div>
     <div class="buttons">
       <add-to-cart-button v-if="shouldShowCartInput" :project="project" />
-      <links :to="{ name: 'project', params: { id: project.id } }">
+      <links
+        :to="{
+          name: 'project',
+          params: { roundIndex: roundAddress, id: project.id },
+        }"
+      >
         <button class="more-btn">More</button>
       </links>
     </div>
@@ -46,6 +66,10 @@ import { markdown } from '@/utils/markdown'
 export default class ProjectListItem extends Vue {
   @Prop()
   project!: Project
+
+  get roundAddress(): string | undefined {
+    return this.$route.params.roundIndex
+  }
 
   get descriptionHtml(): string {
     return markdown.renderInline(this.project.description)

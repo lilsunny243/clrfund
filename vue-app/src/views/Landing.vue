@@ -14,9 +14,7 @@
               Every project you contribute to gets a portion of extra funding.
             </div>
             <div class="btn-group">
-              <links :to="backToProjectsLink" class="btn-action"
-                >Go to app</links
-              >
+              <links to="/round" class="btn-action">Go to app</links>
               <div class="btn-white" @click="scrollToHowItWorks">
                 How it works
               </div>
@@ -214,16 +212,6 @@ export default class Landing extends Vue {
 
   get operator(): string {
     return operator
-  }
-
-  get backToProjectsLink(): string {
-    const currentRound = this.$store.state.currentRound
-
-    if (!currentRound) {
-      return ''
-    }
-
-    return `/round/${currentRound.fundingRoundAddress}/projects`
   }
 
   scrollToHowItWorks() {

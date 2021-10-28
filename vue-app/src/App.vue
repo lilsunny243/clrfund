@@ -180,13 +180,13 @@ export default class App extends Vue {
   }
 
   get backToProjectsLink(): string {
-    const currentRound = this.$store.state.currentRound
+    const roundIndex = this.$route.params.roundIndex
 
-    if (!currentRound) {
-      return ''
+    if (!roundIndex) {
+      return '/round'
     }
 
-    return `/round/${currentRound.fundingRoundAddress}/projects`
+    return `/round/${roundIndex}`
   }
 
   get backLinkText(): string {
@@ -200,6 +200,7 @@ export default class App extends Vue {
       'project-added',
       'join',
       'join-step',
+      'round',
       'projects',
       'transaction-success',
       'verify',
