@@ -59,6 +59,7 @@ import {
   LOAD_COMMITTED_CART,
   LOAD_CONTRIBUTOR_DATA,
   LOGIN_USER,
+  LOAD_HISTORIC_ROUND,
 } from '@/store/action-types'
 import { SET_CURRENT_USER } from '@/store/mutation-types'
 
@@ -85,30 +86,31 @@ import { SET_CURRENT_USER } from '@/store/mutation-types'
 })
 export default class App extends Vue {
   intervals: { [key: string]: any } = {}
+
   async created(): Promise<void> {
-    await this.selectRound(await this.roundAddress())
+    // TODO: add polling every 1 min
+    this.loadRound()
   }
 
-  // TODO: SELECT_ROUND action also commits SET_CURRENT_FACTORY_ADDRESS on this action, should be passed optionally and default to env variable
-  async selectRound(_roundAddress): Promise<void> {
-    await this.$store.dispatch(SELECT_ROUND, _roundAddress)
+  // TODO: SELECT_ROUND action also commits SET_CURRENT_FACTORY_ADDRESS on this
+  // action, should be passed optionally and default to env variable
+  @Watch('$route.params')
+  async loadRound(): Promise<void> {
+    const roundIndex = this.$route.params.roundIndex
+
+    // Always fetch the current round and store it. We use it to compare with the
+    // historical round that the user might select manually and display a warning
+    // message describing that an old round is being displayed.
+    const currentRoundAddress = await getCurrentRound()
+    await this.$store.dispatch(SELECT_ROUND, currentRoundAddress)
     await this.$store.dispatch(LOAD_ROUND_INFO)
     await this.$store.dispatch(LOAD_RECIPIENT_REGISTRY_INFO)
-  }
 
-  async roundAddress(): Promise<string> {
-    return (
-      this.$route.params.roundIndex ||
-      this.$store.state.currentRoundAddress ||
-      (await getCurrentRound())
-    )
-  }
-
-  @Watch('$route.params')
-  async updateRound(): Promise<void> {
-    if (this.$route.params.roundIndex === this.$store.state.currentRoundAddress)
-      return
-    await this.selectRound(await this.roundAddress())
+    // In case there is a round as a route param, load and store it in
+    // state.historicRound
+    if (roundIndex) {
+      this.$store.dispatch(LOAD_HISTORIC_ROUND, roundIndex)
+    }
   }
 
   @Watch('$web3.user')

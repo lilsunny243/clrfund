@@ -33,6 +33,7 @@ import {
   UPDATE_CART_ITEM,
   TOGGLE_EDIT_SELECTION,
   SET_HAS_VOTED,
+  SET_HISTORIC_ROUND,
 } from './mutation-types'
 
 const mutations = {
@@ -59,6 +60,9 @@ const mutations = {
   },
   [SET_CURRENT_ROUND](state, round: RoundInfo) {
     state.currentRound = round
+  },
+  [SET_HISTORIC_ROUND](state, round: RoundInfo) {
+    state.historicRound = round
   },
   [SET_TALLY](state, tally: Tally) {
     state.tally = tally

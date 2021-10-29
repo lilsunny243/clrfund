@@ -27,6 +27,7 @@ import {
   LOAD_CART,
   LOAD_COMMITTED_CART,
   LOAD_CONTRIBUTOR_DATA,
+  LOAD_HISTORIC_ROUND,
   LOAD_RECIPIENT_REGISTRY_INFO,
   LOAD_ROUND_INFO,
   LOAD_USER_INFO,
@@ -53,6 +54,7 @@ import {
   SET_RECIPIENT_REGISTRY_ADDRESS,
   SET_RECIPIENT_REGISTRY_INFO,
   SET_HAS_VOTED,
+  SET_HISTORIC_ROUND,
 } from './mutation-types'
 
 // Utils
@@ -75,6 +77,10 @@ const actions = {
       commit(SET_CURRENT_ROUND, null)
     }
     commit(SET_CURRENT_ROUND_ADDRESS, roundAddress)
+  },
+  async [LOAD_HISTORIC_ROUND]({ commit }, roundIndex: string) {
+    const round = await getRoundInfo(roundIndex)
+    commit(SET_HISTORIC_ROUND, round)
   },
   async [LOAD_ROUND_INFO]({ commit, state }) {
     const roundAddress = state.currentRoundAddress

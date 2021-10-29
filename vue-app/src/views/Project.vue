@@ -10,7 +10,7 @@
     />
     <project-profile class="details" :project="project" :previewMode="false" />
     <div class="sticky-column">
-      <div class="desktop">
+      <div class="desktop" v-if="!isHistoricRound">
         <add-to-cart-button
           v-if="shouldShowCartInput && hasContributeBtn()"
           :project="project"
@@ -35,26 +35,12 @@ import Vue from 'vue'
 import Component from 'vue-class-component'
 import { FixedNumber } from 'ethers'
 
-import {
-  Project,
-  getRecipientRegistryAddress,
-  getProject,
-} from '@/api/projects'
-import { getCurrentRound } from '@/api/round'
+import { Project, getProject } from '@/api/projects'
 import Loader from '@/components/Loader.vue'
 import ProjectProfile from '@/components/ProjectProfile.vue'
 import AddToCartButton from '@/components/AddToCartButton.vue'
 import LinkBox from '@/components/LinkBox.vue'
 import ClaimButton from '@/components/ClaimButton.vue'
-import {
-  SELECT_ROUND,
-  LOAD_ROUND_INFO,
-  LOAD_USER_INFO,
-  LOAD_CART,
-  LOAD_COMMITTED_CART,
-  LOAD_CONTRIBUTOR_DATA,
-} from '@/store/action-types'
-import { SET_RECIPIENT_REGISTRY_ADDRESS } from '@/store/mutation-types'
 import { markdown } from '@/utils/markdown'
 
 @Component({
@@ -69,34 +55,26 @@ export default class ProjectView extends Vue {
   claimed: boolean | null = null
   isLoading = true
 
-  async created() {
-    //TODO: update to take factory address as a parameter, default to env. variable
-    const roundAddress =
-      this.$store.state.currentRoundAddress || (await getCurrentRound())
-    if (
-      roundAddress &&
-      roundAddress !== this.$store.state.currentRoundAddress
-    ) {
-      // Select round
-      //TODO: SELECT_ROUND action also commits SET_CURRENT_FACTORY_ADDRESS on this action, should be passed optionally and default to env variable
-      this.$store.dispatch(SELECT_ROUND, roundAddress)
-      // Don't wait for round info to improve loading time
-      ;(async () => {
-        await this.$store.dispatch(LOAD_ROUND_INFO)
-        if (this.$store.state.currentUser) {
-          // Load user data if already logged in
-          this.$store.dispatch(LOAD_USER_INFO)
-          this.$store.dispatch(LOAD_CART)
-          this.$store.dispatch(LOAD_COMMITTED_CART)
-          this.$store.dispatch(LOAD_CONTRIBUTOR_DATA)
-        }
-      })()
-    }
-    if (this.$store.state.recipientRegistryAddress === null) {
-      const registryAddress = await getRecipientRegistryAddress(roundAddress)
-      this.$store.commit(SET_RECIPIENT_REGISTRY_ADDRESS, registryAddress)
-    }
+  get isCartToggledOpen(): boolean {
+    return this.$store.state.showCartPanel
+  }
 
+  get shouldShowCartInput(): boolean {
+    const { isRoundContributionPhase, canUserReallocate } = this.$store.getters
+    return isRoundContributionPhase || canUserReallocate
+  }
+
+  get descriptionHtml(): string {
+    return markdown.render(this.project?.description || '')
+  }
+
+  get isHistoricRound(): boolean {
+    const roundIndex = this.$route.params.roundIndex
+    const currentRound = this.$store.state.currentRound
+    return roundIndex !== currentRound.fundingRoundAddress
+  }
+
+  async created() {
     const project = await getProject(
       this.$store.state.recipientRegistryAddress,
       this.$route.params.id
@@ -111,25 +89,12 @@ export default class ProjectView extends Vue {
     this.isLoading = false
   }
 
-  get isCartToggledOpen(): boolean {
-    return this.$store.state.showCartPanel
-  }
-
-  get shouldShowCartInput(): boolean {
-    const { isRoundContributionPhase, canUserReallocate } = this.$store.getters
-    return isRoundContributionPhase || canUserReallocate
-  }
-
   hasContributeBtn(): boolean {
     return (
       this.$store.state.currentRound &&
       this.project !== null &&
       this.project.index !== 0
     )
-  }
-
-  get descriptionHtml(): string {
-    return markdown.render(this.project?.description || '')
   }
 }
 </script>
