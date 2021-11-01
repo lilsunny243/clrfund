@@ -39,6 +39,12 @@
             Closed
           </div>
         </div>
+        <div v-if="isHistoricRound" class="round-notice center">
+          <p class="bold-all-caps">This is an old round</p>
+          <links class="dismiss-btn" to="/round">
+            Go to the current round
+          </links>
+        </div>
         <div v-if="isMaxMessagesReached" class="round-notice hidden">
           <span class="bold-all-caps">
             <p>The round is officially closed</p>
@@ -364,6 +370,18 @@ export default class RoundInformation extends Vue {
     return this.formatAmount(totalInRound)
   }
 
+  get isHistoricRound(): boolean {
+    const { currentRoundAddress, activeRoundAddress } = this.$store.state
+    return currentRoundAddress !== activeRoundAddress
+  }
+
+  get blockExplorer(): { label: string; url: string } {
+    return {
+      label: chain.explorerLabel,
+      url: `${chain.explorer}/address/${this.currentRound?.fundingRoundAddress}`,
+    }
+  }
+
   formatIntegerPart(value: FixedNumber): string {
     if (value._value === '0.0') {
       return '0'
@@ -419,13 +437,6 @@ export default class RoundInformation extends Vue {
         },
       }
     )
-  }
-
-  get blockExplorer(): { label: string; url: string } {
-    return {
-      label: chain.explorerLabel,
-      url: `${chain.explorer}/address/${this.currentRound?.fundingRoundAddress}`,
-    }
   }
 }
 </script>
@@ -736,6 +747,7 @@ export default class RoundInformation extends Vue {
 }
 
 .round-notice {
+  width: 100%;
   background: $warning-color-bg;
   border: 1px solid $warning-color;
   border-radius: 0.5rem;
@@ -754,6 +766,10 @@ export default class RoundInformation extends Vue {
     width: fit-content;
     padding: 0.25rem 1.25rem;
   }
+}
+
+.center {
+  text-align: center;
 }
 
 .hidden {
