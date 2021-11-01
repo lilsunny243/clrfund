@@ -26,7 +26,7 @@
       </div>
       <div
         id="cart"
-        v-if="isSideCartShown"
+        v-if="isSideCartShown && !isHistoricRound"
         :class="`desktop ${isCartToggledOpen ? 'open-cart' : 'closed-cart'}`"
       >
         <cart-widget />
@@ -46,7 +46,6 @@ import { User } from '@/api/user'
 import RoundInformation from '@/views/RoundInformation.vue'
 import NavBar from '@/components/NavBar.vue'
 import CartWidget from '@/components/CartWidget.vue'
-import Cart from '@/components/Cart.vue'
 import MobileTabs from '@/components/MobileTabs.vue'
 import BackLink from '@/components/BackLink.vue'
 
@@ -59,9 +58,11 @@ import {
   LOAD_COMMITTED_CART,
   LOAD_CONTRIBUTOR_DATA,
   LOGIN_USER,
-  LOAD_HISTORIC_ROUND,
 } from '@/store/action-types'
-import { SET_CURRENT_USER } from '@/store/mutation-types'
+import {
+  SET_CURRENT_USER,
+  SET_ACTIVE_ROUND_ADDRESS,
+} from '@/store/mutation-types'
 
 @Component({
   name: 'clr.fund',
@@ -78,7 +79,6 @@ import { SET_CURRENT_USER } from '@/store/mutation-types'
   components: {
     RoundInformation,
     NavBar,
-    Cart,
     MobileTabs,
     CartWidget,
     BackLink,
@@ -99,18 +99,14 @@ export default class App extends Vue {
     const roundIndex = this.$route.params.roundIndex
 
     // Always fetch the current round and store it. We use it to compare with the
-    // historical round that the user might select manually and display a warning
+    // current round that the user might select manually and display a warning
     // message describing that an old round is being displayed.
     const currentRoundAddress = await getCurrentRound()
-    await this.$store.dispatch(SELECT_ROUND, currentRoundAddress)
+    await this.$store.commit(SET_ACTIVE_ROUND_ADDRESS, currentRoundAddress)
+
+    await this.$store.dispatch(SELECT_ROUND, roundIndex || currentRoundAddress)
     await this.$store.dispatch(LOAD_ROUND_INFO)
     await this.$store.dispatch(LOAD_RECIPIENT_REGISTRY_INFO)
-
-    // In case there is a round as a route param, load and store it in
-    // state.historicRound
-    if (roundIndex) {
-      this.$store.dispatch(LOAD_HISTORIC_ROUND, roundIndex)
-    }
   }
 
   @Watch('$web3.user')
@@ -128,7 +124,7 @@ export default class App extends Vue {
     }
   }
 
-  private get currentUser(): User {
+  get currentUser(): User {
     return this.$store.state.currentUser
   }
 
@@ -214,6 +210,11 @@ export default class App extends Vue {
 
   get isCartToggledOpen(): boolean {
     return this.$store.state.showCartPanel
+  }
+
+  get isHistoricRound(): boolean {
+    const { currentRoundAddress, activeRoundAddress } = this.$store.state
+    return currentRoundAddress !== activeRoundAddress
   }
 }
 </script>

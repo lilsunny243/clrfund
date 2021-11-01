@@ -70,8 +70,8 @@ export default class ProjectView extends Vue {
 
   get isHistoricRound(): boolean {
     const roundIndex = this.$route.params.roundIndex
-    const currentRound = this.$store.state.currentRound
-    return roundIndex !== currentRound.fundingRoundAddress
+    const activeRoundAddress = this.$store.state.activeRoundAddress
+    return roundIndex !== activeRoundAddress
   }
 
   async created() {

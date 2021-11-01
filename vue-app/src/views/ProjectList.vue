@@ -123,12 +123,6 @@ export default class ProjectList extends Vue {
   selectedCategories: string[] = []
 
   get currentRound(): RoundInfo | null {
-    const roundIndex = this.$route.params.roundIndex
-
-    if (roundIndex) {
-      return this.$store.state.historicRound
-    }
-
     return this.$store.state.currentRound
   }
 

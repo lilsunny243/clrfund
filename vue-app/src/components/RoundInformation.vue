@@ -331,12 +331,6 @@ export default class RoundInformation extends Vue {
   }
 
   get currentRound(): RoundInfo | null {
-    const roundIndex = this.$route.params.roundIndex
-
-    if (roundIndex) {
-      return this.$store.state.historicRound
-    }
-
     return this.$store.state.currentRound
   }
 

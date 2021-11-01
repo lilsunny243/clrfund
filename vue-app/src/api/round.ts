@@ -50,7 +50,7 @@ export async function getCurrentRound(): Promise<string | null> {
   if (fundingRoundAddress === '0x0000000000000000000000000000000000000000') {
     return null
   }
-  return fundingRoundAddress
+  return fundingRoundAddress.toLowerCase()
 }
 
 //TODO: update to take factory address as a parameter, default to env. variable

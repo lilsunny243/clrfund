@@ -24,7 +24,7 @@ export interface RootState {
   contribution: BigNumber | null
   contributor: Contributor | null
   hasVoted: boolean
-  historicRound: RoundInfo | null
+  activeRoundAddress: string | null
   currentRound: RoundInfo | null
   currentRoundAddress: string | null
   currentUser: User | null

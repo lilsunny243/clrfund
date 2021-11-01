@@ -23,7 +23,7 @@ const state: RootState = {
   contribution: null,
   contributor: null,
   hasVoted: false,
-  historicRound: null,
+  activeRoundAddress: null,
   currentRound: null,
   currentRoundAddress: null,
   currentUser: null,
