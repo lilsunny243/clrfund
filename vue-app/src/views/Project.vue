@@ -10,7 +10,7 @@
     />
     <project-profile class="details" :project="project" :previewMode="false" />
     <div class="sticky-column">
-      <div class="desktop" v-if="!isHistoricRound">
+      <div class="desktop">
         <add-to-cart-button
           v-if="shouldShowCartInput && hasContributeBtn()"
           :project="project"
@@ -66,12 +66,6 @@ export default class ProjectView extends Vue {
 
   get descriptionHtml(): string {
     return markdown.render(this.project?.description || '')
-  }
-
-  get isHistoricRound(): boolean {
-    const roundIndex = this.$route.params.roundIndex
-    const activeRoundAddress = this.$store.state.activeRoundAddress
-    return roundIndex !== activeRoundAddress
   }
 
   async created() {

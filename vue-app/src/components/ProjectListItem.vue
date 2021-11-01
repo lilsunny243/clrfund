@@ -4,7 +4,7 @@
       <links
         :to="{
           name: 'project',
-          params: { roundIndex: roundAddress, id: project.id },
+          params: { roundIndex: roundIndex, id: project.id },
         }"
       >
         <div class="project-image">
@@ -17,7 +17,7 @@
           <links
             :to="{
               name: 'project',
-              params: { roundIndex: roundAddress, id: project.id },
+              params: { roundIndex: roundIndex, id: project.id },
             }"
           >
             {{ project.name }}
@@ -26,7 +26,7 @@
         <links
           :to="{
             name: 'project',
-            params: { roundIndex: roundAddress, id: project.id },
+            params: { roundIndex: roundIndex, id: project.id },
           }"
         >
           <div class="project-description">{{ project.tagline }}</div>
@@ -38,7 +38,7 @@
       <links
         :to="{
           name: 'project',
-          params: { roundIndex: roundAddress, id: project.id },
+          params: { roundIndex: roundIndex, id: project.id },
         }"
       >
         <button class="more-btn">More</button>
@@ -67,7 +67,7 @@ export default class ProjectListItem extends Vue {
   @Prop()
   project!: Project
 
-  get roundAddress(): string | undefined {
+  get roundIndex(): string | undefined {
     return this.$route.params.roundIndex
   }
 

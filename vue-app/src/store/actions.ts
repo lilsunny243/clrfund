@@ -86,7 +86,7 @@ const actions = {
     const round = await getRoundInfo(roundAddress)
     commit(SET_CURRENT_ROUND, round)
     if (round && round.status === RoundStatus.Finalized) {
-      // The tally fetch from ipfs could take long. Do not `await` for it
+      // The tally fetch from ipfs can take long. Do not `await` for it
       getTally(roundAddress).then((tally) => {
         commit(SET_TALLY, tally)
       })

@@ -32,17 +32,7 @@
         </div>
       </div>
       <wallet-widget class="wallet-widget" v-if="inApp" />
-      <links
-        v-if="!inApp"
-        :to="{
-          name: 'round',
-          params: {
-            roundIndex: currentRoundAddress,
-          },
-        }"
-        class="app-btn"
-        >App</links
-      >
+      <links v-if="!inApp" to="/round" class="app-btn">App</links>
     </div>
   </nav>
 </template>
@@ -56,7 +46,6 @@ import WalletWidget from './WalletWidget.vue'
 import CartWidget from './CartWidget.vue'
 import Links from './Links.vue'
 import { chain } from '@/api/core'
-import { RoundInfo } from '@/api/round'
 
 @Component({
   components: { WalletWidget, CartWidget, Links },
@@ -84,10 +73,6 @@ export default class NavBar extends Vue {
         emoji: '🚀',
       })
     }
-  }
-
-  get currentRoundAddress(): RoundInfo {
-    return this.$store.state.currentRound?.fundingRoundAddress
   }
 
   toggleHelpDropdown(): void {
