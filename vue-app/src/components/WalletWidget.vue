@@ -51,6 +51,7 @@ import { chain } from '@/api/core'
 import WalletModal from '@/components/WalletModal.vue'
 import { LOGOUT_USER } from '@/store/action-types'
 import Profile from '@/views/Profile.vue'
+import { RoundInfo } from '@/api/round'
 
 @Component({ components: { Profile, WalletModal } })
 export default class WalletWidget extends Vue {
@@ -71,6 +72,10 @@ export default class WalletWidget extends Vue {
     return this.$store.state.currentUser
   }
 
+  get currentRound(): RoundInfo | null {
+    return this.$store.state.currentRound
+  }
+
   get walletChainId(): number | null {
     return this.$web3.chainId
   }
@@ -86,7 +91,12 @@ export default class WalletWidget extends Vue {
   get balance(): string | null {
     const balance: BigNumber | null | undefined = this.currentUser?.balance
     if (balance === null || typeof balance === 'undefined') return null
-    const { nativeTokenDecimals } = this.$store.state.currentRound
+
+    if (!this.currentRound) {
+      return ''
+    }
+
+    const { nativeTokenDecimals } = this.currentRound
     return formatAmount(balance, nativeTokenDecimals, 4)
   }
 
@@ -134,8 +144,9 @@ export default class WalletWidget extends Vue {
   }
 
   get tokenLogo(): string {
-    const { nativeTokenSymbol } = this.$store.state.currentRound
-    return getTokenLogo(nativeTokenSymbol)
+    return getTokenLogo(
+      this.currentRound ? this.currentRound.nativeTokenSymbol : ''
+    )
   }
 
   get chainCurrencyLogo(): string {
