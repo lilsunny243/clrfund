@@ -62,6 +62,7 @@ import {
 import {
   SET_CURRENT_USER,
   SET_ACTIVE_ROUND_ADDRESS,
+  TOGGLE_SHOW_CART_PANEL,
 } from '@/store/mutation-types'
 
 @Component({
@@ -85,17 +86,9 @@ import {
   },
 })
 export default class App extends Vue {
-  intervals: { [key: string]: any } = {}
+  pollingInterval
 
   async created(): Promise<void> {
-    // TODO: add polling every 1 min
-    this.loadRound()
-  }
-
-  // TODO: SELECT_ROUND action also commits SET_CURRENT_FACTORY_ADDRESS on this
-  // action, should be passed optionally and default to env variable
-  @Watch('$route.params')
-  async loadRound(): Promise<void> {
     const roundIndex = this.$route.params.roundIndex
 
     // Always fetch the current round and store it. We use it to compare with the
@@ -104,9 +97,52 @@ export default class App extends Vue {
     const currentRoundAddress = await getCurrentRound()
     await this.$store.commit(SET_ACTIVE_ROUND_ADDRESS, currentRoundAddress)
 
+    // Set the `currentRound`
     await this.$store.dispatch(SELECT_ROUND, roundIndex || currentRoundAddress)
+
+    // Execute and start polling round information every 1 min
+    this.loadRound()
+    this.pollingInterval = setInterval(this.loadRound, 60 * 1000)
+  }
+
+  beforeDestroy() {
+    if (this.pollingInterval) {
+      clearInterval(this.pollingInterval)
+    }
+  }
+
+  @Watch('$route.params')
+  async verifyLoadRound() {
+    const roundIndex = this.$route.params.roundIndex
+    const { currentRoundAddress, activeRoundAddress } = this.$store.state
+
+    if (roundIndex && roundIndex !== currentRoundAddress) {
+      // If it is an old round, toggle the cart off
+      if (roundIndex !== activeRoundAddress) {
+        this.$store.commit(TOGGLE_SHOW_CART_PANEL, false)
+      }
+
+      // In case we navigate to a different round, load everything again
+      await this.$store.dispatch(SELECT_ROUND, roundIndex)
+      await this.loadRound()
+      await this.loginUser()
+    }
+
+    // Special case for when we transition from an old round to `/round` (that
+    // loads the active round automatically)
+    if (!roundIndex && activeRoundAddress !== currentRoundAddress) {
+      await this.$store.dispatch(SELECT_ROUND, activeRoundAddress)
+      await this.loadRound()
+      await this.loginUser()
+    }
+  }
+
+  // TODO: SELECT_ROUND action also commits SET_CURRENT_FACTORY_ADDRESS on this
+  // action, should be passed optionally and default to env variable
+  async loadRound(): Promise<void> {
     await this.$store.dispatch(LOAD_ROUND_INFO)
     await this.$store.dispatch(LOAD_RECIPIENT_REGISTRY_INFO)
+    await this.$store.dispatch(LOAD_USER_INFO)
   }
 
   @Watch('$web3.user')
