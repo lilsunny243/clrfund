@@ -132,6 +132,10 @@ export default class ProjectList extends Vue {
     return this.$store.state.currentRound
   }
 
+  get recipientRegistryAddress(): string {
+    return this.$store.state.recipientRegistryAddress
+  }
+
   get filteredProjects(): Project[] {
     return this.projectsByCategoriesSelected.filter((project: Project) => {
       if (!this.search) {
@@ -156,15 +160,15 @@ export default class ProjectList extends Vue {
   }
 
   @Watch('currentRound')
-  @Watch('$store.state.recipientRegistryAddress')
+  @Watch('recipientRegistryAddress')
   async loadProjects() {
-    if (!this.currentRound || !this.$store.state.recipientRegistryAddress) {
+    if (!this.currentRound || !this.recipientRegistryAddress) {
       return
     }
 
     this.isLoading = true
     const projects = await getProjects(
-      this.$store.state.recipientRegistryAddress,
+      this.recipientRegistryAddress,
       this.currentRound?.startTime.toSeconds(),
       this.currentRound?.votingDeadline.toSeconds()
     )

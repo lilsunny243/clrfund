@@ -92,8 +92,10 @@ const actions = {
     const round = await getRoundInfo(roundAddress)
     commit(SET_CURRENT_ROUND, round)
     if (round && round.status === RoundStatus.Finalized) {
-      const tally = await getTally(roundAddress)
-      commit(SET_TALLY, tally)
+      // The tally fetch from ipfs could take long. Do not `await` for it
+      getTally(roundAddress).then((tally) => {
+        commit(SET_TALLY, tally)
+      })
     }
   },
   async [LOAD_RECIPIENT_REGISTRY_INFO]({ commit, state }) {

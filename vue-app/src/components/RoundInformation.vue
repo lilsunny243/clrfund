@@ -89,7 +89,7 @@
               formatDate(currentRound.signUpDeadline)
             "
           >
-            <time-left :date="$store.state.currentRound.signUpDeadline" />
+            <time-left :date="currentRound.signUpDeadline" />
           </div>
         </div>
         <div
@@ -148,7 +148,7 @@
               "
             >
               <div class="round-info-value">
-                <time-left :date="$store.state.currentRound.votingDeadline" />
+                <time-left :date="currentRound.votingDeadline" />
               </div>
             </div>
           </div>

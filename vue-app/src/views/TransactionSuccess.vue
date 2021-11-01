@@ -95,7 +95,7 @@ export default class TransactionSuccess extends Vue {
   }
 
   redirectToProjects() {
-    this.$router.push({ name: 'projects' })
+    this.$router.push({ name: 'round' })
   }
 }
 </script>
