@@ -74,7 +74,7 @@
           <links v-if="currentUser" to="/verify/connect" class="btn-primary">
             I have BrightID installed
           </links>
-          <links to="/projects" class="btn-secondary">Go back</links>
+          <links to="/round" class="btn-secondary">Go back</links>
         </div>
       </div>
     </div>
@@ -112,7 +112,8 @@ export default class VerifyLanding extends Vue {
   currentRound: string | null = null
 
   async created() {
-    this.currentRound = await getCurrentRound()
+    const currentFactoryAddress = this.$store.state.currentFactoryAddress
+    this.currentRound = await getCurrentRound(currentFactoryAddress)
     this.loading = false
   }
 

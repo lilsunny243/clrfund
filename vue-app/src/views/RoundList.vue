@@ -17,6 +17,7 @@
 <script lang="ts">
 import Vue from 'vue'
 import Component from 'vue-class-component'
+import { Watch } from 'vue-property-decorator'
 
 import { Round, getRounds } from '@/api/rounds'
 import Links from '@/components/Links.vue'
@@ -25,8 +26,19 @@ import Links from '@/components/Links.vue'
 export default class RoundList extends Vue {
   rounds: Round[] = []
 
-  async created() {
-    this.rounds = (await getRounds()).reverse()
+  get factoryAddress(): string | undefined {
+    return this.$store.state.currentFactoryAddress
+  }
+
+  created() {
+    this.loadRounds()
+  }
+
+  @Watch('factoryAddress')
+  async loadRounds() {
+    if (this.factoryAddress) {
+      this.rounds = (await getRounds(this.factoryAddress)).reverse()
+    }
   }
 }
 </script>
