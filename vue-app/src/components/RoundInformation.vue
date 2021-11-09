@@ -274,6 +274,9 @@
             </div>
           </div>
         </div>
+        <div class="rounds-button-wrapper">
+          <links to="/rounds" class="btn-secondary">View all rounds</links>
+        </div>
       </template>
       <template v-else-if="!currentRound && !isLoading">
         <div class="round-info-item">
@@ -540,7 +543,6 @@ export default class RoundInformation extends Vue {
   width: 100%;
   display: grid;
   align-items: center;
-  margin-bottom: 3rem;
   border-radius: 0.5rem;
 
   img {
@@ -653,6 +655,11 @@ export default class RoundInformation extends Vue {
       margin-right: 0;
     }
   }
+}
+
+.rounds-button-wrapper {
+  width: 100%;
+  margin-bottom: 3rem;
 }
 
 .message {
