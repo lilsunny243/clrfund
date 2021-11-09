@@ -35,7 +35,7 @@ export default {
 
     plugin.connectWallet = async (
       wallet: Wallet,
-      options: { loginMessage: string }
+      options: { loginMessage?: string } = {}
     ): Promise<void> => {
       if (!wallet || typeof wallet !== 'string') {
         throw new Error(
@@ -54,7 +54,7 @@ export default {
 
       const signature = await conn.provider.request({
         method: 'personal_sign',
-        params: [options.loginMessage, account],
+        params: [options.loginMessage || '', account],
       })
 
       // Save chosen provider to localStorage

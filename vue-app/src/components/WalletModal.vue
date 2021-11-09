@@ -55,7 +55,7 @@ export default class WalletModal extends Vue {
   }
 
   get factoryAddress(): string | undefined {
-    return this.$route.params.factoryAddress
+    return this.$store.state.currentFactoryAddress
   }
 
   get loginMessage(): string {
@@ -66,7 +66,9 @@ export default class WalletModal extends Vue {
     this.error = ''
     this.connectingWallet = true
     try {
-      await this.$web3.connectWallet(walletType, { loginMessage: '' })
+      await this.$web3.connectWallet(walletType, {
+        loginMessage: this.loginMessage,
+      })
       this.$emit('close')
     } catch (error) {
       this.error = error.message
