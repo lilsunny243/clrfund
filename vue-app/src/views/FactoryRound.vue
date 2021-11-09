@@ -126,18 +126,19 @@ export default class FactoryRound extends Vue {
     const { currentRoundAddress, activeRoundAddress, currentFactoryAddress } =
       this.$store.state
     const roundIndex = this.$route.params.roundIndex
+    const selectedRound = roundIndex || activeRoundAddress
 
-    if (roundIndex === currentRoundAddress) {
+    if (selectedRound === currentRoundAddress) {
       return
     }
 
     // If it is an old round, toggle the cart off
-    if (roundIndex !== activeRoundAddress) {
+    if (selectedRound !== activeRoundAddress) {
       this.$store.commit(TOGGLE_SHOW_CART_PANEL, false)
     }
 
     await this.$store.dispatch(SELECT_ROUND, {
-      roundIndex: roundIndex || activeRoundAddress,
+      roundIndex: selectedRound,
       factoryAddress: currentFactoryAddress,
     })
     await this.loadRound()
