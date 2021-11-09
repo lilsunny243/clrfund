@@ -1,5 +1,8 @@
 query GetRounds($factoryAddress: String!) {
-  fundingRounds(where: { fundingRoundFactory: $factoryAddress }) {
+  fundingRounds(
+    where: { fundingRoundFactory: $factoryAddress }
+    orderBy: startTime
+  ) {
     id
   }
 }
