@@ -17,10 +17,8 @@ const connectors: Record<Wallet, any> = {
 
 export default {
   install: async (Vue) => {
-    const alreadyConnectedProvider: Wallet | null = lsGet(
-      CONNECTED_PROVIDER,
-      null
-    )
+    const alreadyConnectedProvider: { wallet: Wallet; options: any } | null =
+      lsGet(CONNECTED_PROVIDER, null)
 
     const plugin = new Vue({
       data: {
@@ -58,7 +56,7 @@ export default {
       })
 
       // Save chosen provider to localStorage
-      lsSet(CONNECTED_PROVIDER, wallet)
+      lsSet(CONNECTED_PROVIDER, { wallet, options })
 
       // Check if user is using the supported chain id
       const supportedChainId = Number(process.env.VUE_APP_ETHEREUM_API_CHAINID)
@@ -127,8 +125,9 @@ export default {
 
     // If previous provider was found, initiate connection.
     if (alreadyConnectedProvider) {
+      const { wallet, options } = alreadyConnectedProvider
       lsRemove(CONNECTED_PROVIDER)
-      plugin.connectWallet(alreadyConnectedProvider)
+      plugin.connectWallet(wallet, options)
     }
 
     Object.defineProperty(Vue.prototype, '$web3', {
