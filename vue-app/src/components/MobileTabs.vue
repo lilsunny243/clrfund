@@ -43,7 +43,7 @@ export default class MobileTabs extends Vue {
     {
       icon: 'projects.svg',
       title: 'Projects',
-      to: '/projects',
+      to: '/round',
     },
     {
       icon: 'cart.svg',
