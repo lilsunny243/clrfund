@@ -85,7 +85,7 @@ import {
     BackLink,
   },
 })
-export default class FactoryRound extends Vue {
+export default class RoundFactory extends Vue {
   pollingInterval
 
   async created(): Promise<void> {

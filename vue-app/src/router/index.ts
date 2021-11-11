@@ -25,7 +25,7 @@ import VerifyView from '../views/Verify.vue'
 import RecipientRegistryView from '@/views/RecipientRegistry.vue'
 import CartView from '@/views/Cart.vue'
 import TransactionSuccess from '@/views/TransactionSuccess.vue'
-import FactoryRound from '@/views/FactoryRound.vue'
+import RoundFactory from '@/views/RoundFactory.vue'
 import Round from '@/views/Round.vue'
 
 Vue.use(VueRouter)
@@ -33,7 +33,7 @@ Vue.use(VueRouter)
 const routes = [
   {
     path: '/:factoryAddress(0x[a-fA-F0-9]{40})?',
-    component: FactoryRound,
+    component: RoundFactory,
     children: [
       {
         path: '',
