@@ -87,7 +87,7 @@ import Component from 'vue-class-component'
 import * as humanizeDuration from 'humanize-duration'
 import { commify, formatUnits } from '@ethersproject/units'
 
-import { getCurrentRound } from '@/api/round'
+import { RoundInfo } from '@/api/round'
 import { User } from '@/api/user'
 
 import Links from '@/components/Links.vue'
@@ -96,6 +96,7 @@ import ProgressBar from '@/components/ProgressBar.vue'
 import RoundStatusBanner from '@/components/RoundStatusBanner.vue'
 import WalletWidget from '@/components/WalletWidget.vue'
 import ImageResponsive from '@/components/ImageResponsive.vue'
+import { Watch } from 'vue-property-decorator'
 
 @Component({
   components: {
@@ -109,12 +110,16 @@ import ImageResponsive from '@/components/ImageResponsive.vue'
 })
 export default class VerifyLanding extends Vue {
   loading = true
-  currentRound: string | null = null
 
-  async created() {
-    const currentFactoryAddress = this.$store.state.currentFactoryAddress
-    this.currentRound = await getCurrentRound(currentFactoryAddress)
-    this.loading = false
+  @Watch('currentRound')
+  finishLoading() {
+    if (this.currentRound) {
+      this.loading = false
+    }
+  }
+
+  get currentRound(): RoundInfo {
+    return this.$store.state.currentRound
   }
 
   get currentUser(): User | null {
