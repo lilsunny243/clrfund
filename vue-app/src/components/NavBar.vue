@@ -11,7 +11,7 @@
       >
         Manage Recipients
       </a>
-      <div class="help-dropdown" v-if="inApp">
+      <div class="help-dropdown" v-if="inApp" v-click-outside="closeDropdown">
         <img
           @click="toggleHelpDropdown()"
           class="dropdown-btn"
@@ -23,6 +23,7 @@
             v-for="({ to, text, emoji }, idx) of dropdownItems"
             :key="idx"
             class="dropdown-item"
+            @click="closeDropdown"
           >
             <links :to="to">
               <div class="emoji-wrapper">{{ emoji }}</div>
@@ -42,13 +43,18 @@ import Vue from 'vue'
 import Component from 'vue-class-component'
 import { Prop } from 'vue-property-decorator'
 
+import ClickOutside from '@/directives/ClickOutside'
+import { chain } from '@/api/core'
+
 import WalletWidget from './WalletWidget.vue'
 import CartWidget from './CartWidget.vue'
 import Links from './Links.vue'
-import { chain } from '@/api/core'
 
 @Component({
   components: { WalletWidget, CartWidget, Links },
+  directives: {
+    ClickOutside,
+  },
 })
 export default class NavBar extends Vue {
   @Prop() inApp
@@ -77,6 +83,10 @@ export default class NavBar extends Vue {
 
   toggleHelpDropdown(): void {
     this.showHelpDowndown = !this.showHelpDowndown
+  }
+
+  closeDropdown(): void {
+    this.showHelpDowndown = false
   }
 }
 </script>
