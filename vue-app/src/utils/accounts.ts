@@ -1,6 +1,8 @@
 import { ethers } from 'ethers'
 import { mainnetProvider } from '@/api/core'
 import { isAddress } from '@ethersproject/address'
+import axios from 'axios'
+import { ipfsGatewayUrl } from '@/api/core'
 
 export function isSameAddress(address1: string, address2: string): boolean {
   return ethers.utils.getAddress(address1) === ethers.utils.getAddress(address2)
@@ -23,6 +25,19 @@ export async function resolveEns(name: string): Promise<string | null> {
 export async function isValidEthAddress(address: string): Promise<boolean> {
   const resolved = await mainnetProvider.resolveName(address)
   return !!resolved
+}
+
+export async function get3BoxAvatarUrl(
+  address: string
+): Promise<string | null> {
+  const threeBoxProfileUrl = `https://ipfs.3box.io/profile?address=${address}`
+  try {
+    const { data } = await axios.get(threeBoxProfileUrl)
+    const profileImageHash = data.image[0].contentUrl['/']
+    return `${ipfsGatewayUrl}/ipfs/${profileImageHash}`
+  } catch (error) {
+    return null
+  }
 }
 
 export function renderAddressOrHash(

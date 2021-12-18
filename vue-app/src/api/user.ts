@@ -3,8 +3,9 @@ import { BigNumber, Contract } from 'ethers'
 import { Web3Provider } from '@ethersproject/providers'
 
 import { UserRegistry, ERC20 } from './abi'
-import { factory, ipfsGatewayUrl, provider } from './core'
+import { factory, provider } from './core'
 import { BrightId } from './bright-id'
+import { get3BoxAvatarUrl } from '../utils/accounts'
 
 //TODO: update anywhere this is called to take factory address as a parameter, default to env. variable
 export const LOGIN_MESSAGE = `Welcome to clr.fund!
@@ -30,16 +31,11 @@ export interface User {
 export async function getProfileImageUrl(
   walletAddress: string
 ): Promise<string | null> {
-  const threeBoxProfileUrl = `https://ipfs.3box.io/profile?address=${walletAddress}`
-  let profileImageHash: string
-  try {
-    const response = await fetch(threeBoxProfileUrl)
-    const profile = await response.json()
-    profileImageHash = profile.image[0].contentUrl['/']
-  } catch (error) {
-    return makeBlockie(walletAddress)
-  }
-  return `${ipfsGatewayUrl}/ipfs/${profileImageHash}`
+  const threeBoxAvatarUrl: string | null = await get3BoxAvatarUrl(walletAddress)
+  if (threeBoxAvatarUrl) return threeBoxAvatarUrl
+
+  // Blockies as a fallback
+  return makeBlockie(walletAddress)
 }
 
 export async function isVerifiedUser(
