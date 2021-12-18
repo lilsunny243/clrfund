@@ -5,7 +5,7 @@ import { Web3Provider } from '@ethersproject/providers'
 import { UserRegistry, ERC20 } from './abi'
 import { factory, provider } from './core'
 import { BrightId } from './bright-id'
-import { get3BoxAvatarUrl } from '../utils/accounts'
+import { get3BoxAvatarUrl, getEnsAvatarUrl } from '../utils/accounts'
 
 //TODO: update anywhere this is called to take factory address as a parameter, default to env. variable
 export const LOGIN_MESSAGE = `Welcome to clr.fund!
@@ -31,6 +31,11 @@ export interface User {
 export async function getProfileImageUrl(
   walletAddress: string
 ): Promise<string | null> {
+  // Priority to ENS avatars
+  const ensAvatarUrl: string | null = await getEnsAvatarUrl(walletAddress)
+  if (ensAvatarUrl) return ensAvatarUrl
+
+  // Then to 3Box
   const threeBoxAvatarUrl: string | null = await get3BoxAvatarUrl(walletAddress)
   if (threeBoxAvatarUrl) return threeBoxAvatarUrl
 
