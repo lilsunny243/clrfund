@@ -25,6 +25,7 @@ export type Scalars = {
 export type Block_Height = {
   hash: Maybe<Scalars['Bytes']>;
   number: Maybe<Scalars['Int']>;
+  number_gte: Maybe<Scalars['Int']>;
 };
 
 
@@ -514,6 +515,8 @@ export type FundingRound = {
   __typename?: 'FundingRound';
   id: Scalars['ID'];
   fundingRoundFactory: Maybe<FundingRoundFactory>;
+  maci: Maybe<Scalars['Bytes']>;
+  messages: Maybe<Array<Message>>;
   recipientRegistry: Maybe<RecipientRegistry>;
   recipientRegistryAddress: Maybe<Scalars['Bytes']>;
   contributorRegistry: Maybe<ContributorRegistry>;
@@ -523,7 +526,6 @@ export type FundingRound = {
   signUpDeadline: Maybe<Scalars['BigInt']>;
   votingDeadline: Maybe<Scalars['BigInt']>;
   coordinator: Maybe<Scalars['Bytes']>;
-  maci: Maybe<Scalars['Bytes']>;
   voiceCreditFactor: Maybe<Scalars['BigInt']>;
   contributorCount: Scalars['BigInt'];
   recipientCount: Scalars['BigInt'];
@@ -539,6 +541,15 @@ export type FundingRound = {
   votes: Maybe<Array<Vote>>;
   createdAt: Maybe<Scalars['String']>;
   lastUpdatedAt: Maybe<Scalars['String']>;
+};
+
+
+export type FundingRoundMessagesArgs = {
+  skip?: Maybe<Scalars['Int']>;
+  first?: Maybe<Scalars['Int']>;
+  orderBy: Maybe<Message_OrderBy>;
+  orderDirection: Maybe<OrderDirection>;
+  where: Maybe<Message_Filter>;
 };
 
 
@@ -891,6 +902,12 @@ export type FundingRound_Filter = {
   fundingRoundFactory_not_starts_with: Maybe<Scalars['String']>;
   fundingRoundFactory_ends_with: Maybe<Scalars['String']>;
   fundingRoundFactory_not_ends_with: Maybe<Scalars['String']>;
+  maci: Maybe<Scalars['Bytes']>;
+  maci_not: Maybe<Scalars['Bytes']>;
+  maci_in: Maybe<Array<Scalars['Bytes']>>;
+  maci_not_in: Maybe<Array<Scalars['Bytes']>>;
+  maci_contains: Maybe<Scalars['Bytes']>;
+  maci_not_contains: Maybe<Scalars['Bytes']>;
   recipientRegistry: Maybe<Scalars['String']>;
   recipientRegistry_not: Maybe<Scalars['String']>;
   recipientRegistry_gt: Maybe<Scalars['String']>;
@@ -967,12 +984,6 @@ export type FundingRound_Filter = {
   coordinator_not_in: Maybe<Array<Scalars['Bytes']>>;
   coordinator_contains: Maybe<Scalars['Bytes']>;
   coordinator_not_contains: Maybe<Scalars['Bytes']>;
-  maci: Maybe<Scalars['Bytes']>;
-  maci_not: Maybe<Scalars['Bytes']>;
-  maci_in: Maybe<Array<Scalars['Bytes']>>;
-  maci_not_in: Maybe<Array<Scalars['Bytes']>>;
-  maci_contains: Maybe<Scalars['Bytes']>;
-  maci_not_contains: Maybe<Scalars['Bytes']>;
   voiceCreditFactor: Maybe<Scalars['BigInt']>;
   voiceCreditFactor_not: Maybe<Scalars['BigInt']>;
   voiceCreditFactor_gt: Maybe<Scalars['BigInt']>;
@@ -1076,6 +1087,8 @@ export type FundingRound_Filter = {
 export enum FundingRound_OrderBy {
   Id = 'id',
   FundingRoundFactory = 'fundingRoundFactory',
+  Maci = 'maci',
+  Messages = 'messages',
   RecipientRegistry = 'recipientRegistry',
   RecipientRegistryAddress = 'recipientRegistryAddress',
   ContributorRegistry = 'contributorRegistry',
@@ -1085,7 +1098,6 @@ export enum FundingRound_OrderBy {
   SignUpDeadline = 'signUpDeadline',
   VotingDeadline = 'votingDeadline',
   Coordinator = 'coordinator',
-  Maci = 'maci',
   VoiceCreditFactor = 'voiceCreditFactor',
   ContributorCount = 'contributorCount',
   RecipientCount = 'recipientCount',
@@ -1103,15 +1115,190 @@ export enum FundingRound_OrderBy {
   LastUpdatedAt = 'lastUpdatedAt'
 }
 
+export type Message = {
+  __typename?: 'Message';
+  id: Scalars['ID'];
+  data: Maybe<Array<Scalars['BigInt']>>;
+  iv: Scalars['BigInt'];
+  publicKey: Maybe<PublicKey>;
+  fundingRound: Maybe<FundingRound>;
+  timestamp: Maybe<Scalars['String']>;
+};
+
+export type Message_Filter = {
+  id: Maybe<Scalars['ID']>;
+  id_not: Maybe<Scalars['ID']>;
+  id_gt: Maybe<Scalars['ID']>;
+  id_lt: Maybe<Scalars['ID']>;
+  id_gte: Maybe<Scalars['ID']>;
+  id_lte: Maybe<Scalars['ID']>;
+  id_in: Maybe<Array<Scalars['ID']>>;
+  id_not_in: Maybe<Array<Scalars['ID']>>;
+  data: Maybe<Array<Scalars['BigInt']>>;
+  data_not: Maybe<Array<Scalars['BigInt']>>;
+  data_contains: Maybe<Array<Scalars['BigInt']>>;
+  data_not_contains: Maybe<Array<Scalars['BigInt']>>;
+  iv: Maybe<Scalars['BigInt']>;
+  iv_not: Maybe<Scalars['BigInt']>;
+  iv_gt: Maybe<Scalars['BigInt']>;
+  iv_lt: Maybe<Scalars['BigInt']>;
+  iv_gte: Maybe<Scalars['BigInt']>;
+  iv_lte: Maybe<Scalars['BigInt']>;
+  iv_in: Maybe<Array<Scalars['BigInt']>>;
+  iv_not_in: Maybe<Array<Scalars['BigInt']>>;
+  publicKey: Maybe<Scalars['String']>;
+  publicKey_not: Maybe<Scalars['String']>;
+  publicKey_gt: Maybe<Scalars['String']>;
+  publicKey_lt: Maybe<Scalars['String']>;
+  publicKey_gte: Maybe<Scalars['String']>;
+  publicKey_lte: Maybe<Scalars['String']>;
+  publicKey_in: Maybe<Array<Scalars['String']>>;
+  publicKey_not_in: Maybe<Array<Scalars['String']>>;
+  publicKey_contains: Maybe<Scalars['String']>;
+  publicKey_not_contains: Maybe<Scalars['String']>;
+  publicKey_starts_with: Maybe<Scalars['String']>;
+  publicKey_not_starts_with: Maybe<Scalars['String']>;
+  publicKey_ends_with: Maybe<Scalars['String']>;
+  publicKey_not_ends_with: Maybe<Scalars['String']>;
+  fundingRound: Maybe<Scalars['String']>;
+  fundingRound_not: Maybe<Scalars['String']>;
+  fundingRound_gt: Maybe<Scalars['String']>;
+  fundingRound_lt: Maybe<Scalars['String']>;
+  fundingRound_gte: Maybe<Scalars['String']>;
+  fundingRound_lte: Maybe<Scalars['String']>;
+  fundingRound_in: Maybe<Array<Scalars['String']>>;
+  fundingRound_not_in: Maybe<Array<Scalars['String']>>;
+  fundingRound_contains: Maybe<Scalars['String']>;
+  fundingRound_not_contains: Maybe<Scalars['String']>;
+  fundingRound_starts_with: Maybe<Scalars['String']>;
+  fundingRound_not_starts_with: Maybe<Scalars['String']>;
+  fundingRound_ends_with: Maybe<Scalars['String']>;
+  fundingRound_not_ends_with: Maybe<Scalars['String']>;
+  timestamp: Maybe<Scalars['String']>;
+  timestamp_not: Maybe<Scalars['String']>;
+  timestamp_gt: Maybe<Scalars['String']>;
+  timestamp_lt: Maybe<Scalars['String']>;
+  timestamp_gte: Maybe<Scalars['String']>;
+  timestamp_lte: Maybe<Scalars['String']>;
+  timestamp_in: Maybe<Array<Scalars['String']>>;
+  timestamp_not_in: Maybe<Array<Scalars['String']>>;
+  timestamp_contains: Maybe<Scalars['String']>;
+  timestamp_not_contains: Maybe<Scalars['String']>;
+  timestamp_starts_with: Maybe<Scalars['String']>;
+  timestamp_not_starts_with: Maybe<Scalars['String']>;
+  timestamp_ends_with: Maybe<Scalars['String']>;
+  timestamp_not_ends_with: Maybe<Scalars['String']>;
+};
+
+export enum Message_OrderBy {
+  Id = 'id',
+  Data = 'data',
+  Iv = 'iv',
+  PublicKey = 'publicKey',
+  FundingRound = 'fundingRound',
+  Timestamp = 'timestamp'
+}
+
 export enum OrderDirection {
   Asc = 'asc',
   Desc = 'desc'
+}
+
+export type PublicKey = {
+  __typename?: 'PublicKey';
+  id: Scalars['ID'];
+  fundingRound: Maybe<FundingRound>;
+  messages: Maybe<Array<Message>>;
+  x: Scalars['BigInt'];
+  y: Scalars['BigInt'];
+  stateIndex: Maybe<Scalars['BigInt']>;
+  voiceCreditBalance: Maybe<Scalars['BigInt']>;
+};
+
+
+export type PublicKeyMessagesArgs = {
+  skip?: Maybe<Scalars['Int']>;
+  first?: Maybe<Scalars['Int']>;
+  orderBy: Maybe<Message_OrderBy>;
+  orderDirection: Maybe<OrderDirection>;
+  where: Maybe<Message_Filter>;
+};
+
+export type PublicKey_Filter = {
+  id: Maybe<Scalars['ID']>;
+  id_not: Maybe<Scalars['ID']>;
+  id_gt: Maybe<Scalars['ID']>;
+  id_lt: Maybe<Scalars['ID']>;
+  id_gte: Maybe<Scalars['ID']>;
+  id_lte: Maybe<Scalars['ID']>;
+  id_in: Maybe<Array<Scalars['ID']>>;
+  id_not_in: Maybe<Array<Scalars['ID']>>;
+  fundingRound: Maybe<Scalars['String']>;
+  fundingRound_not: Maybe<Scalars['String']>;
+  fundingRound_gt: Maybe<Scalars['String']>;
+  fundingRound_lt: Maybe<Scalars['String']>;
+  fundingRound_gte: Maybe<Scalars['String']>;
+  fundingRound_lte: Maybe<Scalars['String']>;
+  fundingRound_in: Maybe<Array<Scalars['String']>>;
+  fundingRound_not_in: Maybe<Array<Scalars['String']>>;
+  fundingRound_contains: Maybe<Scalars['String']>;
+  fundingRound_not_contains: Maybe<Scalars['String']>;
+  fundingRound_starts_with: Maybe<Scalars['String']>;
+  fundingRound_not_starts_with: Maybe<Scalars['String']>;
+  fundingRound_ends_with: Maybe<Scalars['String']>;
+  fundingRound_not_ends_with: Maybe<Scalars['String']>;
+  x: Maybe<Scalars['BigInt']>;
+  x_not: Maybe<Scalars['BigInt']>;
+  x_gt: Maybe<Scalars['BigInt']>;
+  x_lt: Maybe<Scalars['BigInt']>;
+  x_gte: Maybe<Scalars['BigInt']>;
+  x_lte: Maybe<Scalars['BigInt']>;
+  x_in: Maybe<Array<Scalars['BigInt']>>;
+  x_not_in: Maybe<Array<Scalars['BigInt']>>;
+  y: Maybe<Scalars['BigInt']>;
+  y_not: Maybe<Scalars['BigInt']>;
+  y_gt: Maybe<Scalars['BigInt']>;
+  y_lt: Maybe<Scalars['BigInt']>;
+  y_gte: Maybe<Scalars['BigInt']>;
+  y_lte: Maybe<Scalars['BigInt']>;
+  y_in: Maybe<Array<Scalars['BigInt']>>;
+  y_not_in: Maybe<Array<Scalars['BigInt']>>;
+  stateIndex: Maybe<Scalars['BigInt']>;
+  stateIndex_not: Maybe<Scalars['BigInt']>;
+  stateIndex_gt: Maybe<Scalars['BigInt']>;
+  stateIndex_lt: Maybe<Scalars['BigInt']>;
+  stateIndex_gte: Maybe<Scalars['BigInt']>;
+  stateIndex_lte: Maybe<Scalars['BigInt']>;
+  stateIndex_in: Maybe<Array<Scalars['BigInt']>>;
+  stateIndex_not_in: Maybe<Array<Scalars['BigInt']>>;
+  voiceCreditBalance: Maybe<Scalars['BigInt']>;
+  voiceCreditBalance_not: Maybe<Scalars['BigInt']>;
+  voiceCreditBalance_gt: Maybe<Scalars['BigInt']>;
+  voiceCreditBalance_lt: Maybe<Scalars['BigInt']>;
+  voiceCreditBalance_gte: Maybe<Scalars['BigInt']>;
+  voiceCreditBalance_lte: Maybe<Scalars['BigInt']>;
+  voiceCreditBalance_in: Maybe<Array<Scalars['BigInt']>>;
+  voiceCreditBalance_not_in: Maybe<Array<Scalars['BigInt']>>;
+};
+
+export enum PublicKey_OrderBy {
+  Id = 'id',
+  FundingRound = 'fundingRound',
+  Messages = 'messages',
+  X = 'x',
+  Y = 'y',
+  StateIndex = 'stateIndex',
+  VoiceCreditBalance = 'voiceCreditBalance'
 }
 
 export type Query = {
   __typename?: 'Query';
   fundingRoundFactory: Maybe<FundingRoundFactory>;
   fundingRoundFactories: Array<FundingRoundFactory>;
+  message: Maybe<Message>;
+  messages: Array<Message>;
+  publicKey: Maybe<PublicKey>;
+  publicKeys: Array<PublicKey>;
   fundingRound: Maybe<FundingRound>;
   fundingRounds: Array<FundingRound>;
   recipientRegistry: Maybe<RecipientRegistry>;
@@ -1140,6 +1327,7 @@ export type Query = {
 export type QueryFundingRoundFactoryArgs = {
   id: Scalars['ID'];
   block: Maybe<Block_Height>;
+  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
@@ -1150,12 +1338,50 @@ export type QueryFundingRoundFactoriesArgs = {
   orderDirection: Maybe<OrderDirection>;
   where: Maybe<FundingRoundFactory_Filter>;
   block: Maybe<Block_Height>;
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type QueryMessageArgs = {
+  id: Scalars['ID'];
+  block: Maybe<Block_Height>;
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type QueryMessagesArgs = {
+  skip?: Maybe<Scalars['Int']>;
+  first?: Maybe<Scalars['Int']>;
+  orderBy: Maybe<Message_OrderBy>;
+  orderDirection: Maybe<OrderDirection>;
+  where: Maybe<Message_Filter>;
+  block: Maybe<Block_Height>;
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type QueryPublicKeyArgs = {
+  id: Scalars['ID'];
+  block: Maybe<Block_Height>;
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type QueryPublicKeysArgs = {
+  skip?: Maybe<Scalars['Int']>;
+  first?: Maybe<Scalars['Int']>;
+  orderBy: Maybe<PublicKey_OrderBy>;
+  orderDirection: Maybe<OrderDirection>;
+  where: Maybe<PublicKey_Filter>;
+  block: Maybe<Block_Height>;
+  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
 export type QueryFundingRoundArgs = {
   id: Scalars['ID'];
   block: Maybe<Block_Height>;
+  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
@@ -1166,12 +1392,14 @@ export type QueryFundingRoundsArgs = {
   orderDirection: Maybe<OrderDirection>;
   where: Maybe<FundingRound_Filter>;
   block: Maybe<Block_Height>;
+  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
 export type QueryRecipientRegistryArgs = {
   id: Scalars['ID'];
   block: Maybe<Block_Height>;
+  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
@@ -1182,12 +1410,14 @@ export type QueryRecipientRegistriesArgs = {
   orderDirection: Maybe<OrderDirection>;
   where: Maybe<RecipientRegistry_Filter>;
   block: Maybe<Block_Height>;
+  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
 export type QueryRecipientArgs = {
   id: Scalars['ID'];
   block: Maybe<Block_Height>;
+  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
@@ -1198,12 +1428,14 @@ export type QueryRecipientsArgs = {
   orderDirection: Maybe<OrderDirection>;
   where: Maybe<Recipient_Filter>;
   block: Maybe<Block_Height>;
+  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
 export type QueryContributorRegistryArgs = {
   id: Scalars['ID'];
   block: Maybe<Block_Height>;
+  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
@@ -1214,12 +1446,14 @@ export type QueryContributorRegistriesArgs = {
   orderDirection: Maybe<OrderDirection>;
   where: Maybe<ContributorRegistry_Filter>;
   block: Maybe<Block_Height>;
+  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
 export type QueryContributorArgs = {
   id: Scalars['ID'];
   block: Maybe<Block_Height>;
+  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
@@ -1230,12 +1464,14 @@ export type QueryContributorsArgs = {
   orderDirection: Maybe<OrderDirection>;
   where: Maybe<Contributor_Filter>;
   block: Maybe<Block_Height>;
+  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
 export type QueryCoordinatorArgs = {
   id: Scalars['ID'];
   block: Maybe<Block_Height>;
+  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
@@ -1246,12 +1482,14 @@ export type QueryCoordinatorsArgs = {
   orderDirection: Maybe<OrderDirection>;
   where: Maybe<Coordinator_Filter>;
   block: Maybe<Block_Height>;
+  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
 export type QueryContributionArgs = {
   id: Scalars['ID'];
   block: Maybe<Block_Height>;
+  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
@@ -1262,12 +1500,14 @@ export type QueryContributionsArgs = {
   orderDirection: Maybe<OrderDirection>;
   where: Maybe<Contribution_Filter>;
   block: Maybe<Block_Height>;
+  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
 export type QueryVoteArgs = {
   id: Scalars['ID'];
   block: Maybe<Block_Height>;
+  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
@@ -1278,12 +1518,14 @@ export type QueryVotesArgs = {
   orderDirection: Maybe<OrderDirection>;
   where: Maybe<Vote_Filter>;
   block: Maybe<Block_Height>;
+  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
 export type QueryDonationArgs = {
   id: Scalars['ID'];
   block: Maybe<Block_Height>;
+  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
@@ -1294,12 +1536,14 @@ export type QueryDonationsArgs = {
   orderDirection: Maybe<OrderDirection>;
   where: Maybe<Donation_Filter>;
   block: Maybe<Block_Height>;
+  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
 export type QueryTokenArgs = {
   id: Scalars['ID'];
   block: Maybe<Block_Height>;
+  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
@@ -1310,6 +1554,7 @@ export type QueryTokensArgs = {
   orderDirection: Maybe<OrderDirection>;
   where: Maybe<Token_Filter>;
   block: Maybe<Block_Height>;
+  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
@@ -1670,6 +1915,10 @@ export type Subscription = {
   __typename?: 'Subscription';
   fundingRoundFactory: Maybe<FundingRoundFactory>;
   fundingRoundFactories: Array<FundingRoundFactory>;
+  message: Maybe<Message>;
+  messages: Array<Message>;
+  publicKey: Maybe<PublicKey>;
+  publicKeys: Array<PublicKey>;
   fundingRound: Maybe<FundingRound>;
   fundingRounds: Array<FundingRound>;
   recipientRegistry: Maybe<RecipientRegistry>;
@@ -1698,6 +1947,7 @@ export type Subscription = {
 export type SubscriptionFundingRoundFactoryArgs = {
   id: Scalars['ID'];
   block: Maybe<Block_Height>;
+  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
@@ -1708,12 +1958,50 @@ export type SubscriptionFundingRoundFactoriesArgs = {
   orderDirection: Maybe<OrderDirection>;
   where: Maybe<FundingRoundFactory_Filter>;
   block: Maybe<Block_Height>;
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type SubscriptionMessageArgs = {
+  id: Scalars['ID'];
+  block: Maybe<Block_Height>;
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type SubscriptionMessagesArgs = {
+  skip?: Maybe<Scalars['Int']>;
+  first?: Maybe<Scalars['Int']>;
+  orderBy: Maybe<Message_OrderBy>;
+  orderDirection: Maybe<OrderDirection>;
+  where: Maybe<Message_Filter>;
+  block: Maybe<Block_Height>;
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type SubscriptionPublicKeyArgs = {
+  id: Scalars['ID'];
+  block: Maybe<Block_Height>;
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type SubscriptionPublicKeysArgs = {
+  skip?: Maybe<Scalars['Int']>;
+  first?: Maybe<Scalars['Int']>;
+  orderBy: Maybe<PublicKey_OrderBy>;
+  orderDirection: Maybe<OrderDirection>;
+  where: Maybe<PublicKey_Filter>;
+  block: Maybe<Block_Height>;
+  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
 export type SubscriptionFundingRoundArgs = {
   id: Scalars['ID'];
   block: Maybe<Block_Height>;
+  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
@@ -1724,12 +2012,14 @@ export type SubscriptionFundingRoundsArgs = {
   orderDirection: Maybe<OrderDirection>;
   where: Maybe<FundingRound_Filter>;
   block: Maybe<Block_Height>;
+  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
 export type SubscriptionRecipientRegistryArgs = {
   id: Scalars['ID'];
   block: Maybe<Block_Height>;
+  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
@@ -1740,12 +2030,14 @@ export type SubscriptionRecipientRegistriesArgs = {
   orderDirection: Maybe<OrderDirection>;
   where: Maybe<RecipientRegistry_Filter>;
   block: Maybe<Block_Height>;
+  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
 export type SubscriptionRecipientArgs = {
   id: Scalars['ID'];
   block: Maybe<Block_Height>;
+  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
@@ -1756,12 +2048,14 @@ export type SubscriptionRecipientsArgs = {
   orderDirection: Maybe<OrderDirection>;
   where: Maybe<Recipient_Filter>;
   block: Maybe<Block_Height>;
+  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
 export type SubscriptionContributorRegistryArgs = {
   id: Scalars['ID'];
   block: Maybe<Block_Height>;
+  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
@@ -1772,12 +2066,14 @@ export type SubscriptionContributorRegistriesArgs = {
   orderDirection: Maybe<OrderDirection>;
   where: Maybe<ContributorRegistry_Filter>;
   block: Maybe<Block_Height>;
+  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
 export type SubscriptionContributorArgs = {
   id: Scalars['ID'];
   block: Maybe<Block_Height>;
+  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
@@ -1788,12 +2084,14 @@ export type SubscriptionContributorsArgs = {
   orderDirection: Maybe<OrderDirection>;
   where: Maybe<Contributor_Filter>;
   block: Maybe<Block_Height>;
+  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
 export type SubscriptionCoordinatorArgs = {
   id: Scalars['ID'];
   block: Maybe<Block_Height>;
+  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
@@ -1804,12 +2102,14 @@ export type SubscriptionCoordinatorsArgs = {
   orderDirection: Maybe<OrderDirection>;
   where: Maybe<Coordinator_Filter>;
   block: Maybe<Block_Height>;
+  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
 export type SubscriptionContributionArgs = {
   id: Scalars['ID'];
   block: Maybe<Block_Height>;
+  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
@@ -1820,12 +2120,14 @@ export type SubscriptionContributionsArgs = {
   orderDirection: Maybe<OrderDirection>;
   where: Maybe<Contribution_Filter>;
   block: Maybe<Block_Height>;
+  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
 export type SubscriptionVoteArgs = {
   id: Scalars['ID'];
   block: Maybe<Block_Height>;
+  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
@@ -1836,12 +2138,14 @@ export type SubscriptionVotesArgs = {
   orderDirection: Maybe<OrderDirection>;
   where: Maybe<Vote_Filter>;
   block: Maybe<Block_Height>;
+  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
 export type SubscriptionDonationArgs = {
   id: Scalars['ID'];
   block: Maybe<Block_Height>;
+  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
@@ -1852,12 +2156,14 @@ export type SubscriptionDonationsArgs = {
   orderDirection: Maybe<OrderDirection>;
   where: Maybe<Donation_Filter>;
   block: Maybe<Block_Height>;
+  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
 export type SubscriptionTokenArgs = {
   id: Scalars['ID'];
   block: Maybe<Block_Height>;
+  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
@@ -1868,6 +2174,7 @@ export type SubscriptionTokensArgs = {
   orderDirection: Maybe<OrderDirection>;
   where: Maybe<Token_Filter>;
   block: Maybe<Block_Height>;
+  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
@@ -2076,12 +2383,11 @@ export type GetContributorVotesQueryVariables = Exact<{
 export type GetContributorVotesQuery = { __typename?: 'Query', fundingRound: Maybe<{ __typename?: 'FundingRound', id: string, contributors: Maybe<Array<{ __typename?: 'Contributor', votes: Maybe<Array<{ __typename?: 'Vote', id: string }>> }>> }> };
 
 export type GetProjectQueryVariables = Exact<{
-  registryAddress: Scalars['ID'];
   recipientId: Scalars['ID'];
 }>;
 
 
-export type GetProjectQuery = { __typename?: 'Query', recipientRegistry: Maybe<{ __typename?: 'RecipientRegistry', recipients: Maybe<Array<{ __typename?: 'Recipient', id: string, requestType: Maybe<string>, recipientAddress: Maybe<any>, recipientMetadata: Maybe<string>, recipientIndex: Maybe<any>, submissionTime: Maybe<string>, rejected: Maybe<boolean>, verified: Maybe<boolean> }>> }> };
+export type GetProjectQuery = { __typename?: 'Query', recipients: Array<{ __typename?: 'Recipient', id: string, requestType: Maybe<string>, recipientAddress: Maybe<any>, recipientMetadata: Maybe<string>, recipientIndex: Maybe<any>, submissionTime: Maybe<string>, rejected: Maybe<boolean>, verified: Maybe<boolean> }> };
 
 export type GetRecipientQueryVariables = Exact<{
   registryAddress: Scalars['ID'];
@@ -2092,19 +2398,19 @@ export type GetRecipientQueryVariables = Exact<{
 export type GetRecipientQuery = { __typename?: 'Query', recipientRegistry: Maybe<{ __typename?: 'RecipientRegistry', recipients: Maybe<Array<{ __typename?: 'Recipient', id: string, requestType: Maybe<string>, recipientAddress: Maybe<any>, recipientMetadata: Maybe<string>, submissionTime: Maybe<string>, rejected: Maybe<boolean>, verified: Maybe<boolean> }>> }> };
 
 export type GetRecipientDonationsQueryVariables = Exact<{
-  fundingRoundAddress: Scalars['ID'];
-  recipientAddress: Scalars['ID'];
+  fundingRoundAddress: Scalars['String'];
+  recipientAddress: Scalars['String'];
 }>;
 
 
-export type GetRecipientDonationsQuery = { __typename?: 'Query', fundingRound: Maybe<{ __typename?: 'FundingRound', recipientRegistry: Maybe<{ __typename?: 'RecipientRegistry', recipients: Maybe<Array<{ __typename?: 'Recipient', donations: Maybe<Array<{ __typename?: 'Donation', id: string }>> }>> }> }> };
+export type GetRecipientDonationsQuery = { __typename?: 'Query', donations: Array<{ __typename?: 'Donation', id: string }> };
 
 export type GetRecipientsQueryVariables = Exact<{
-  registryAddress: Scalars['ID'];
+  registryAddress: Scalars['String'];
 }>;
 
 
-export type GetRecipientsQuery = { __typename?: 'Query', recipientRegistry: Maybe<{ __typename?: 'RecipientRegistry', recipients: Maybe<Array<{ __typename?: 'Recipient', id: string, recipientIndex: Maybe<any>, requestType: Maybe<string>, requester: Maybe<string>, recipientAddress: Maybe<any>, recipientMetadata: Maybe<string>, requestSubmittedHash: Maybe<any>, requestResolvedHash: Maybe<any>, submissionTime: Maybe<string>, rejected: Maybe<boolean>, verified: Maybe<boolean> }>> }> };
+export type GetRecipientsQuery = { __typename?: 'Query', recipients: Array<{ __typename?: 'Recipient', id: string, recipientIndex: Maybe<any>, requestType: Maybe<string>, requester: Maybe<string>, recipientAddress: Maybe<any>, recipientMetadata: Maybe<string>, requestSubmittedHash: Maybe<any>, requestResolvedHash: Maybe<any>, submissionTime: Maybe<string>, rejected: Maybe<boolean>, verified: Maybe<boolean> }> };
 
 export type GetRoundsQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -2143,18 +2449,16 @@ export const GetContributorVotesDocument = gql`
 }
     `;
 export const GetProjectDocument = gql`
-    query GetProject($registryAddress: ID!, $recipientId: ID!) {
-  recipientRegistry(id: $registryAddress) {
-    recipients(where: {id: $recipientId}) {
-      id
-      requestType
-      recipientAddress
-      recipientMetadata
-      recipientIndex
-      submissionTime
-      rejected
-      verified
-    }
+    query GetProject($recipientId: ID!) {
+  recipients(where: {id: $recipientId}) {
+    id
+    requestType
+    recipientAddress
+    recipientMetadata
+    recipientIndex
+    submissionTime
+    rejected
+    verified
   }
 }
     `;
@@ -2174,34 +2478,28 @@ export const GetRecipientDocument = gql`
 }
     `;
 export const GetRecipientDonationsDocument = gql`
-    query GetRecipientDonations($fundingRoundAddress: ID!, $recipientAddress: ID!) {
-  fundingRound(id: $fundingRoundAddress) {
-    recipientRegistry {
-      recipients(where: {id: $recipientAddress}) {
-        donations {
-          id
-        }
-      }
-    }
+    query GetRecipientDonations($fundingRoundAddress: String!, $recipientAddress: String!) {
+  donations(
+    where: {fundingRound: $fundingRoundAddress, recipient: $recipientAddress}
+  ) {
+    id
   }
 }
     `;
 export const GetRecipientsDocument = gql`
-    query GetRecipients($registryAddress: ID!) {
-  recipientRegistry(id: $registryAddress) {
-    recipients {
-      id
-      recipientIndex
-      requestType
-      requester
-      recipientAddress
-      recipientMetadata
-      requestSubmittedHash
-      requestResolvedHash
-      submissionTime
-      rejected
-      verified
-    }
+    query GetRecipients($registryAddress: String!) {
+  recipients(where: {recipientRegistry: $registryAddress}) {
+    id
+    recipientIndex
+    requestType
+    requester
+    recipientAddress
+    recipientMetadata
+    requestSubmittedHash
+    requestResolvedHash
+    submissionTime
+    rejected
+    verified
   }
 }
     `;

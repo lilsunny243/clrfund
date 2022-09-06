@@ -17,12 +17,10 @@
       @click="toggleProfile"
     >
       <div class="profile-info-balance">
-        <img v-if="!showEth" src="@/assets/dai.svg" />
-        <img v-if="showEth" src="@/assets/eth.svg" />
-        <div v-if="!showEth" class="balance">
-          {{ balance }}
-        </div>
+        <img v-if="showEth" :src="require(`@/assets/${chainCurrencyLogo}`)" />
+        <img v-else :src="require(`@/assets/${tokenLogo}`)" />
         <div v-if="showEth" class="balance">{{ etherBalance }}</div>
+        <div v-else class="balance">{{ balance }}</div>
       </div>
       <div class="profile-name">
         {{ displayAddress }}
@@ -47,7 +45,9 @@ import { Prop, Watch } from 'vue-property-decorator'
 import { BigNumber } from 'ethers'
 
 import { formatAmount } from '@/utils/amounts'
+import { getTokenLogo } from '@/utils/tokens'
 import { User, getProfileImageUrl } from '@/api/user'
+import { chain } from '@/api/core'
 import WalletModal from '@/components/WalletModal.vue'
 import { LOGOUT_USER } from '@/store/action-types'
 import Profile from '@/views/Profile.vue'
@@ -75,6 +75,14 @@ export default class WalletWidget extends Vue {
     return this.$web3.chainId
   }
 
+  get nativeTokenSymbol(): string {
+    return this.$store.getters.nativeTokenSymbol
+  }
+
+  get nativeTokenDecimals(): number | undefined {
+    return this.$store.getters.nativeTokenDecimals
+  }
+
   get etherBalance(): string | null {
     const etherBalance = this.currentUser?.etherBalance
     if (etherBalance === null || typeof etherBalance === 'undefined') {
@@ -86,8 +94,7 @@ export default class WalletWidget extends Vue {
   get balance(): string | null {
     const balance: BigNumber | null | undefined = this.currentUser?.balance
     if (balance === null || typeof balance === 'undefined') return null
-    const { nativeTokenDecimals } = this.$store.state.currentRound
-    return formatAmount(balance, nativeTokenDecimals, 4)
+    return formatAmount(balance, this.nativeTokenDecimals, 4)
   }
 
   async mounted() {
@@ -131,6 +138,14 @@ export default class WalletWidget extends Vue {
   get displayAddress(): string | null {
     if (!this.currentUser) return null
     return this.currentUser.ensName ?? this.currentUser.walletAddress
+  }
+
+  get tokenLogo(): string {
+    return getTokenLogo(this.nativeTokenSymbol)
+  }
+
+  get chainCurrencyLogo(): string {
+    return getTokenLogo(chain.currency)
   }
 }
 </script>

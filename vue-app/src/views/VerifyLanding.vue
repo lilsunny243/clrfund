@@ -1,16 +1,17 @@
 @ -0,0 +1,36 @@
 <template>
   <div>
-    <round-status-banner />
+    <round-status-banner v-if="$store.state.currentRound" />
     <loader v-if="loading" />
     <div v-if="!loading">
       <div class="gradient">
         <img src="@/assets/moon.png" class="moon" />
         <div class="hero">
-          <img src="@/assets/newrings.png" />
+          <image-responsive title="newrings" />
         </div>
       </div>
       <div class="content">
+        <breadcrumbs />
         <div class="flex-title">
           <h1>Prove you’re only using one account</h1>
         </div>
@@ -50,20 +51,20 @@
           <li>Access to Zoom or Google Meet</li>
         </ul>
         <links to="/about-sybil-resistance/">Why is this important?</links>
-        <div
-          v-if="
-            $store.getters.isRoundJoinPhase &&
-            !currentRound &&
-            !isRoundFullOrOver
-          "
-          class="join-message"
-        >
+        <div v-if="isRoundNotStarted" class="join-message">
           There's not yet an open funding round. Get prepared now so you're
           ready for when the next one begins!
         </div>
-        <div v-if="isRoundFullOrOver" class="warning-message">
+        <div v-else-if="isRoundOver" class="warning-message">
           The current round is no longer accepting new contributions. You can
           still get BrightID verified to prepare for next time.
+        </div>
+        <div v-else-if="isRoundFull" class="warning-message">
+          Contributions closed early – you can no longer donate! Due to the
+          community's generosity and some technical constraints we had to close
+          the round earlier than expected. If you already contributed, you still
+          have time to reallocate if you need to. If you didn't get a chance to
+          contribute, you can still help by donating to the matching pool
         </div>
         <div class="btn-container mt2">
           <wallet-widget
@@ -90,19 +91,23 @@ import { commify, formatUnits } from '@ethersproject/units'
 import { getCurrentRound } from '@/api/round'
 import { User } from '@/api/user'
 
+import Breadcrumbs from '@/components/Breadcrumbs.vue'
 import Links from '@/components/Links.vue'
 import Loader from '@/components/Loader.vue'
 import ProgressBar from '@/components/ProgressBar.vue'
 import RoundStatusBanner from '@/components/RoundStatusBanner.vue'
 import WalletWidget from '@/components/WalletWidget.vue'
+import ImageResponsive from '@/components/ImageResponsive.vue'
 
 @Component({
   components: {
+    Breadcrumbs,
     Links,
     Loader,
     ProgressBar,
     RoundStatusBanner,
     WalletWidget,
+    ImageResponsive,
   },
 })
 export default class VerifyLanding extends Vue {
@@ -126,18 +131,16 @@ export default class VerifyLanding extends Vue {
     return commify(formatUnits(balance, 18))
   }
 
-  get isRoundFullOrOver(): boolean {
-    const currentRound = this.$store.state.currentRound
-    if (!currentRound) {
-      return false
-    }
-    const hasHitMaxContributors =
-      currentRound.maxContributors <= currentRound.contributors
-    return (
-      this.$store.getters.hasContributionPhaseEnded ||
-      this.$store.getters.isMessageLimitReached ||
-      hasHitMaxContributors
-    )
+  get isRoundNotStarted(): boolean {
+    return this.$store.getters.isRoundJoinPhase
+  }
+
+  get isRoundFull(): boolean {
+    return this.$store.getters.isRoundContributorLimitReached
+  }
+
+  get isRoundOver(): boolean {
+    return this.$store.getters.hasContributionPhaseEnded
   }
 
   formatDuration(value: number): string {

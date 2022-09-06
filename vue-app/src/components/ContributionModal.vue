@@ -35,6 +35,14 @@
         :hash="approvalTxHash"
         :error="approvalTxError || error"
         @close="$emit('close')"
+        @retry="
+          () => {
+            this.step = 0
+            this.approvalTxError = ''
+            contribute()
+          }
+        "
+        :displayRetryBtn="true"
       ></transaction>
     </div>
     <div v-if="step === 2">
@@ -51,6 +59,14 @@
         :hash="contributionTxHash"
         :error="contributionTxError || error"
         @close="$emit('close')"
+        @retry="
+          () => {
+            this.step = 0
+            this.contributionTxError = ''
+            contribute()
+          }
+        "
+        :displayRetryBtn="true"
       ></transaction>
     </div>
     <div v-if="step === 3">
@@ -65,6 +81,13 @@
         :hash="voteTxHash"
         :error="voteTxError || error"
         @close="$emit('close')"
+        @retry="
+          () => {
+            this.voteTxError = ''
+            sendVotes()
+          }
+        "
+        :displayRetryBtn="true"
       ></transaction>
     </div>
   </div>
@@ -312,16 +335,5 @@ export default class ContributionModal extends Vue {
   border-radius: 1rem;
   box-shadow: $box-shadow;
   padding: 1.5rem;
-}
-
-.close-btn {
-  margin-top: $modal-space;
-}
-
-.content {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  margin-bottom: 1rem;
 }
 </style>

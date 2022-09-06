@@ -28,14 +28,14 @@ import TransactionSuccess from '@/views/TransactionSuccess.vue'
 
 Vue.use(VueRouter)
 
-//TODO: create a new route that kaes funding factory address as a param
+// TODO: create a new route that takes funding factory address as a param
 const routes = [
   {
     path: '/',
     name: 'landing',
     component: Landing,
     meta: {
-      title: 'Eth2 clr.fund',
+      title: 'Clr.fund',
     },
   },
   {
@@ -72,7 +72,7 @@ const routes = [
     name: 'round',
     component: ProjectList,
     meta: {
-      title: 'Project List for Round',
+      title: 'Project List',
     },
   },
   {
@@ -168,15 +168,15 @@ const routes = [
     name: 'verify',
     component: VerifyLanding,
     meta: {
-      title: 'BrightID Verify Landing',
+      title: 'BrightID Verification',
     },
   },
   {
-    path: '/verify/success/:hash',
+    path: '/verify/success/:hash?',
     name: 'verified',
     component: Verified,
     meta: {
-      title: 'Verified',
+      title: 'Verification Success',
     },
   },
   {
@@ -192,7 +192,7 @@ const routes = [
     name: 'join',
     component: JoinLanding,
     meta: {
-      title: 'Recipient Join Form Landing',
+      title: 'Add Project',
     },
   },
   {
@@ -200,7 +200,7 @@ const routes = [
     name: 'project-added',
     component: ProjectAdded,
     meta: {
-      title: 'Recipient Join Form Success',
+      title: 'Application Success',
     },
   },
   {
@@ -208,7 +208,7 @@ const routes = [
     name: 'join-step',
     component: JoinView,
     meta: {
-      title: 'Recipient Join Form Steps',
+      title: 'Project Application',
     },
   },
 
@@ -224,6 +224,9 @@ const routes = [
     path: '/transaction-success/:type/:hash?',
     name: 'transaction-success',
     component: TransactionSuccess,
+    meta: {
+      title: 'Transaction Success',
+    },
   },
 ]
 const router = new VueRouter({

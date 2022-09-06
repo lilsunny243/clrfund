@@ -48,12 +48,14 @@ In case you want to stop the node and start it without any subgraph that could h
 rm -rf data/postgres
 ```
 
-## Deploy the clr.fund subgraph
+## Run it locally
 
 ```sh
-# in a different terminal, go back to the clrfund repo
-cd clrfund
+# having the thegraph node running in docker, just run this:
+# it will deploy the contracts, the subgraph and run the webapp
+yarn start:dev
 
+# in case you want to only deploy the subgraph manually, run
 # this will build the subgraph using the hardhat configs and then will deploy it into the local graph node
 yarn start:subgraph
 ```

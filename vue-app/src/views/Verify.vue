@@ -104,9 +104,9 @@
               address.
             </p>
             <p>
-              Once the app is linked in your BrightID app, wait a few moments
-              for us to verify the connection. We'll automatically transition
-              you to the next step.
+              Once this app is linked in your BrightID app, we'll automatically
+              transition you to the next step. It may take a minute for us to
+              verify the connection - please wait.
             </p>
             <div class="qr">
               <div class="instructions">
@@ -149,15 +149,23 @@
                   type="button"
                   class="btn-action btn-block"
                   @click="sponsor"
+                  :disabled="sponsorTxHash.length !== 0"
                 >
                   Get sponsored
                 </button>
                 <transaction
-                  v-if="loadingTx || sponsorTxError"
+                  v-if="sponsorTxHash || loadingTx || sponsorTxError"
                   :display-close-btn="false"
                   :hash="sponsorTxHash"
                   :error="sponsorTxError"
                 />
+              </div>
+              <div v-if="sponsorTxHash">
+                <loader />
+                <p>
+                  Waiting for sponsorship verification from BrightID, please
+                  wait. This shouldn't take more than a couple of minutes.
+                </p>
               </div>
             </div>
           </div>
@@ -199,11 +207,12 @@
                 type="button"
                 class="btn-action btn-block"
                 @click="register"
+                :disabled="registrationTxHash.length !== 0"
               >
                 Become a contributor
               </button>
               <transaction
-                v-if="loadingTx || registrationTxError"
+                v-if="registrationTxHash || loadingTx || registrationTxError"
                 :display-close-btn="false"
                 :hash="registrationTxHash"
                 :error="registrationTxError"

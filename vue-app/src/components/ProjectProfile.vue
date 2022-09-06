@@ -30,30 +30,19 @@
         </div>
       </div>
       <div class="mobile mb2">
-        <div class="input-button" v-if="hasContributeBtn() && !inCart">
-          <img class="token-icon" height="24px" src="@/assets/dai.svg" />
-          <input
-            v-model="contributionAmount"
-            class="input"
-            name="contributionAmount"
-            placeholder="5"
-            autocomplete="on"
-            onfocus="this.value=''"
-          />
-          <input
-            type="submit"
-            class="donate-btn"
-            :disabled="!canContribute()"
-            @click="contribute()"
-            value="Add to cart"
-          />
-        </div>
-        <div class="input-button" v-if="hasContributeBtn() && inCart">
-          <button class="donate-btn-full">
-            <span>In cart 🎉</span>
-          </button>
-        </div>
+        <add-to-cart-button
+          v-if="shouldShowCartInput && hasContributeBtn()"
+          :project="project"
+        />
         <claim-button :project="project" />
+        <p
+          v-if="
+            $store.getters.hasUserContributed &&
+            !$store.getters.canUserReallocate
+          "
+        >
+          ✔️ You have contributed to this project!
+        </p>
       </div>
       <div class="project-section">
         <h2>About the project</h2>
@@ -88,11 +77,14 @@
           />
           <links
             class="explorerLink"
-            :to="blockExplorerUrl"
-            title="View on Etherscan"
+            :to="blockExplorer.url"
+            :title="`View on ${blockExplorer.label}`"
             :hideArrow="true"
           >
-            <img class="icon" src="@/assets/etherscan.svg" />
+            <img
+              class="icon"
+              :src="require(`@/assets/${blockExplorer.logo}`)"
+            />
           </links>
         </div>
       </div>
@@ -111,29 +103,41 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue'
-import Component from 'vue-class-component'
-import { Prop } from 'vue-property-decorator'
+import { Vue, Component, Prop } from 'vue-property-decorator'
 import { DateTime } from 'luxon'
 import { Project } from '@/api/projects'
 import { DEFAULT_CONTRIBUTION_AMOUNT, CartItem } from '@/api/contributions'
 import { RoundStatus } from '@/api/round'
-import { blockExplorer } from '@/api/core'
+import { chain } from '@/api/core'
 import { SAVE_CART } from '@/store/action-types'
 import { ADD_CART_ITEM } from '@/store/mutation-types'
 import { ensLookup } from '@/utils/accounts'
+import { getTokenLogo } from '@/utils/tokens'
 import Info from '@/components/Info.vue'
 import Markdown from '@/components/Markdown.vue'
 import CopyButton from '@/components/CopyButton.vue'
 import LinkBox from '@/components/LinkBox.vue'
 import Links from '@/components/Links.vue'
+import AddToCartButton from '@/components/AddToCartButton.vue'
+import ClaimButton from '@/components/ClaimButton.vue'
 
-@Component({ components: { Markdown, Info, LinkBox, CopyButton, Links } })
+@Component({
+  components: {
+    Markdown,
+    Info,
+    LinkBox,
+    CopyButton,
+    Links,
+    AddToCartButton,
+    ClaimButton,
+  },
+})
 export default class ProjectProfile extends Vue {
-  contributionAmount: number | null = DEFAULT_CONTRIBUTION_AMOUNT
   @Prop() project!: Project
   @Prop() klerosCurateUrl!: string | null
   @Prop() previewMode!: boolean
+
+  contributionAmount: number | null = DEFAULT_CONTRIBUTION_AMOUNT
   ens: string | null = null
 
   async mounted() {
@@ -185,12 +189,21 @@ export default class ProjectProfile extends Vue {
     this.$store.dispatch(SAVE_CART)
   }
 
-  get blockExplorerUrl(): string {
-    return `${blockExplorer}/address/${this.project.address}`
+  get blockExplorer(): { label: string; url: string; logo: string } {
+    return {
+      label: chain.explorerLabel,
+      url: `${chain.explorer}/address/${this.project.address}`,
+      logo: chain.explorerLogo,
+    }
   }
 
   get addressName(): string {
     return this.ens || this.project.address
+  }
+
+  get shouldShowCartInput(): boolean {
+    const { isRoundContributionPhase, canUserReallocate } = this.$store.getters
+    return isRoundContributionPhase || canUserReallocate
   }
 }
 </script>

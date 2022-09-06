@@ -12,8 +12,8 @@ async function main() {
   console.log('*******************')
   const [deployer] = await ethers.getSigners()
   console.log('deployer.address: ', deployer.address)
-
-  let maciFactory = await deployMaciFactory(deployer)
+  const circuit = 'prod'
+  let maciFactory = await deployMaciFactory(deployer, circuit)
   await maciFactory.deployTransaction.wait()
   console.log('maciFactory.address: ', maciFactory.address)
 
@@ -132,7 +132,7 @@ async function main() {
     teamName: 'metadata.teamName',
     teamDescription: 'metadata.teamDescription',
     githubUrl: 'https://github.com/',
-    radicleUrl: 'https://radicle.com/',
+    radicleUrl: 'https://radicle.xyz/',
     websiteUrl: 'https://website.com/',
     twitterUrl: 'https://twitter.com/',
     discordUrl: 'https://discord.com/',
@@ -153,7 +153,7 @@ async function main() {
     teamName: 'metadata.teamName',
     teamDescription: 'metadata.teamDescription',
     githubUrl: 'https://github.com/',
-    radicleUrl: 'https://radicle.com/',
+    radicleUrl: 'https://radicle.xyz/',
     websiteUrl: 'https://website.com/',
     twitterUrl: 'https://twitter.com/',
     discordUrl: 'https://discord.com/',

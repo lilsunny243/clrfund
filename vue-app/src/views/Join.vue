@@ -44,7 +44,9 @@
             <h2 class="step-title">About the project</h2>
             <div class="inputs">
               <div class="form-background">
-                <label for="project-name" class="input-label">Name</label>
+                <label for="project-name" class="input-label"
+                  >Project name</label
+                >
                 <input
                   id="project-name"
                   type="text"
@@ -233,8 +235,9 @@
                   >Ethereum address</label
                 >
                 <p class="input-description">
-                  This doesn’t have to be the same address as the one you use to
-                  send your application.
+                  The destination address for donations, which you'll use to
+                  claim funds. This doesn't have to be the same address as the
+                  one you use to send your application transaction.
                 </p>
                 <input
                   id="fund-address"
@@ -291,10 +294,10 @@
             <h2 class="step-title">Team details</h2>
             <p>Tell us about the folks behind your project.</p>
             <div class="inputs">
-              <div class="form-background">
-                <label for="team-email" class="input-label"
-                  >Contact email</label
-                >
+              <div v-if="isEmailRequired" class="form-background">
+                <label for="team-email" class="input-label">
+                  Contact email
+                </label>
                 <p class="input-description">
                   For important updates about your project and the funding
                   round.
@@ -339,7 +342,7 @@
               </div>
               <div class="form-background">
                 <label for="team-desc" class="input-label"
-                  >Description (optional)</label
+                  >Team description (optional)</label
                 >
                 <p class="input-description">
                   If different to project description. Markdown supported.
@@ -394,7 +397,7 @@
                 <input
                   id="links-radicle"
                   type="link"
-                  placeholder="example: https://radicle.com/ethereum/clrfund"
+                  placeholder="example: https://radicle.xyz/ethereum/clrfund"
                   v-model.lazy="$v.form.links.radicle.$model"
                   :class="{
                     input: true,
@@ -415,7 +418,7 @@
                 <input
                   id="links-website"
                   type="link"
-                  placeholder="example: https://ethereum.foundation"
+                  placeholder="example: https://clr.fund"
                   v-model.lazy="$v.form.links.website.$model"
                   :class="{
                     input: true,
@@ -553,8 +556,8 @@
                   <h4 class="read-only-title">Ethereum address</h4>
                   <div class="data break-all">
                     {{ form.fund.addressName }}
-                    <links :to="blockExplorerUrl" class="no-break">
-                      View on Etherscan
+                    <links :to="blockExplorer.url" class="no-break">
+                      View on {{ blockExplorer.label }}
                     </links>
                   </div>
                   <div
@@ -577,7 +580,7 @@
                     >Edit <img width="16px" src="@/assets/edit.svg"
                   /></links>
                 </div>
-                <div class="summary">
+                <div v-if="isEmailRequired" class="summary">
                   <h4 class="read-only-title">Contact email</h4>
                   <div class="data">{{ form.team.email }}</div>
                   <div class="input-notice">
@@ -755,7 +758,7 @@ import {
   formToProjectInterface,
 } from '@/api/recipient-registry-optimistic'
 import { Project } from '@/api/projects'
-import { blockExplorer } from '@/api/core'
+import { chain } from '@/api/core'
 
 @Component({
   components: {
@@ -797,7 +800,9 @@ import { blockExplorer } from '@/api/core'
         description: {},
         email: {
           email,
-          required,
+          required: process.env.VUE_APP_GOOGLE_SPREADSHEET_ID
+            ? required
+            : () => true,
         },
       },
       links: {
@@ -890,42 +895,10 @@ export default class JoinView extends mixins(validationMixin) {
         params: { step: steps[this.form.furthestStep] },
       })
     }
+  }
 
-    // if (process.env.NODE_ENV === 'development') {
-    //   this.form = {
-    //     project: {
-    //       name: 'CLR.Fund',
-    //       tagline: 'A quadratic funding protocol',
-    //       description:
-    //         '**CLR.fund** is a quadratic funding protocol that aims to make it as easy as possible to set up, manage, and participate in quadratic funding rounds...\n# Derp\n\nasdfasdfasdf\n\n## Derp\n\nasdfsdasdfsdf\n### Derp\n\nasdfasdfsdaf\n#### Derp\nasdfasdf\n##### Derp',
-    //       category: 'research',
-    //       problemSpace:
-    //         'There is no way to spin up a quadratic funding round. Right now, you have to collaborate with GitCoin Grants which isn’t a scalable or sustainable model.',
-    //     },
-    //     fund: {
-    //       address: '0x4351f1F0eEe77F0102fF70D5197cCa7aa6c91EA2',
-    //       plans: 'Create much wow, when lambo?',
-    //     },
-    //     team: {
-    //       name: 'clr.fund',
-    //       description: 'clr.fund team **rules**',
-    //       email: 'doge@goodboi.com',
-    //     },
-    //     links: {
-    //       github: '',
-    //       radicle: '',
-    //       website: 'https://clr.fund',
-    //       twitter: '',
-    //       discord: '',
-    //     },
-    //     image: {
-    //       bannerHash: 'QmbMP2fMiy6ek5uQZaxG3bzT9gSqMWxpdCUcQg1iSeEFMU',
-    //       thumbnailHash: 'QmbMP2fMiy6ek5uQZaxG3bzT9gSqMWxpdCUcQg1iSeEFMU',
-    //     },
-    //     furthestStep: 5,
-    //   }
-    //   this.saveFormData()
-    // }
+  get isEmailRequired(): boolean {
+    return !!process.env.VUE_APP_GOOGLE_SPREADSHEET_ID
   }
 
   handleToggleTab(event): void {
@@ -1018,8 +991,11 @@ export default class JoinView extends mixins(validationMixin) {
     return this.form.furthestStep
   }
 
-  get blockExplorerUrl(): string {
-    return `${blockExplorer}/address/${this.form.fund.resolvedAddress}`
+  get blockExplorer(): { label: string; url: string } {
+    return {
+      label: chain.explorerLabel,
+      url: `${chain.explorer}/address/${this.form.fund.resolvedAddress}`,
+    }
   }
 
   async checkEns(): Promise<void> {
@@ -1101,7 +1077,7 @@ export default class JoinView extends mixins(validationMixin) {
 
 .form-area {
   grid-area: form;
-  overflow: scroll;
+  overflow: auto;
   display: flex;
   flex-direction: column;
   gap: 1rem;

@@ -1,5 +1,7 @@
 import { GoogleSpreadsheet } from 'google-spreadsheet'
 
+const GOOGLE_SHEET_NAME = process.env.GOOGLE_SHEET_NAME || 'Raw'
+
 /**
  * Creates an object row from a RecipientApplicationData. A row is a key-value
  * object where the keys are composed by the concatenation of the nested keys.
@@ -48,11 +50,11 @@ exports.handler = async function (event) {
     const recipient = JSON.parse(event.body)
 
     const creds = JSON.parse(process.env.GOOGLE_APPLICATION_CREDENTIALS)
-    const doc = new GoogleSpreadsheet(process.env.GOOGLE_SPREADSHEET_ID)
+    const doc = new GoogleSpreadsheet(process.env.VUE_APP_GOOGLE_SPREADSHEET_ID)
     await doc.useServiceAccountAuth(creds)
 
     await doc.loadInfo()
-    const sheet = doc.sheetsByIndex[0]
+    const sheet = doc.sheetsByTitle[GOOGLE_SHEET_NAME]
     const row = recipientToRow(recipient)
     await sheet.addRow(row)
 

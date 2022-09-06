@@ -1,19 +1,40 @@
 <template>
   <div class="about">
     <h1 class="content-heading">Recipient guide</h1>
-    <h2>Get funds on Arbitrum</h2>
     <p>
-      You'll need some ETH on Arbitrum in order to submit transactions to the
-      clr.fund smart contracts. Follow
-      <links to="https://arbitrum.io/bridge-tutorial/">this tutorial</links> to
-      bridge your funds to Arbitrum
+      An overview of how things work as a recipient so you can learn what to
+      expect throughout the duration of a funding round.
     </p>
-    <p>
-      Confused on what Arbitrum is?
-      <links to="/about/layer-2"
-        >Read our explanation on how clr.fund uses layer 2 on Ethereum.</links
-      >
-    </p>
+    <div v-if="chain.bridge">
+      <h2>Get funds on {{ chain.label }}</h2>
+      <p>
+        You'll need some {{ chain.currency }} on {{ chain.label }} in order to
+        submit transactions to the clr.fund smart contracts.
+        <span v-if="chain.isLayer2">
+          Follow
+          <links
+            :to="{
+              name: 'about-layer-2',
+              params: {
+                section: 'bridge',
+              },
+            }"
+          >
+            these steps
+          </links>
+          to bridge your funds to {{ chain.label }}
+        </span>
+        <span v-else>
+          <links :to="chain.bridge">Bridge your funds here</links>
+        </span>
+      </p>
+      <p v-if="chain.isLayer2">
+        Confused on what {{ chain.label }} is?
+        <links to="about/layer-2">
+          Read our explanation on how clr.fund uses layer 2 on Ethereum.
+        </links>
+      </p>
+    </div>
     <h2>Register your project</h2>
     <ol>
       <li>Head over to the <links to="/join">Join page</links>.</li>
@@ -30,13 +51,17 @@
         With the forms finished, you can finish your submission by:
         <ol>
           <li>connecting to the right network via your wallet of choice</li>
-          <li>sending a deposit of 0.1 ETH to the registry contract.</li>
+          <li>
+            sending a deposit of {{ depositAmount }} {{ depositToken }} to the
+            registry contract.
+          </li>
         </ol>
         Projects are accepted by default, but the registry admin may remove
-        projects that don't meet the criteria. Either way, your ETH will be
-        returned once your application has been either accepted or denied. Note
-        that metadata pointing to all your project information (but not contact
-        information) will be stored publicly on-chain.
+        projects that don't meet the criteria. Either way, your
+        {{ depositToken }} will be returned once your application has been
+        either accepted or denied. Note that metadata pointing to all your
+        project information (but not contact information) will be stored
+        publicly on-chain.
       </li>
     </ol>
     <h2>Claim your funds</h2>
@@ -58,7 +83,24 @@
 import Vue from 'vue'
 import Component from 'vue-class-component'
 import Links from '@/components/Links.vue'
+import { chain } from '@/api/core'
+import { ChainInfo } from '@/plugins/Web3/constants/chains'
+import { formatAmount } from '@/utils/amounts'
 
 @Component({ components: { Links } })
-export default class AboutRecipients extends Vue {}
+export default class AboutRecipients extends Vue {
+  get chain(): ChainInfo {
+    return chain
+  }
+
+  get depositAmount(): string {
+    return this.$store.state.recipientRegistryInfo
+      ? formatAmount(this.$store.state.recipientRegistryInfo.deposit, 18)
+      : '...'
+  }
+
+  get depositToken(): string {
+    return this.$store.state.recipientRegistryInfo?.depositToken ?? ''
+  }
+}
 </script>

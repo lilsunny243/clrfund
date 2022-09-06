@@ -1,14 +1,13 @@
 <template>
   <div class="about">
     <h1 class="content-heading">How the round works</h1>
-
     <h2>CLR walkthrough</h2>
     <p>
       This is an overview of how everything works behind the scenes so you can
       learn what to expect throughout the duration of the round.
     </p>
     <p>
-      Looking for a guides on how to partipate? Check out our guides
+      Looking for a guide on how to participate? Check out our guides
       specifically for contributing and joining as a project.
     </p>
     <ul>
@@ -51,10 +50,9 @@
     </p>
     <h4>Need to know</h4>
     <ul>
-      <!-- TODO pull in variable here -->
-      <li>This phase will last xxx days.</li>
-      <!-- TODO update with relevant info -->
-      <li>There will be a maximum of 125 projects in the round.</li>
+      <li>
+        There will be a maximum of {{ maxRecipients }} projects in the round.
+      </li>
       <li>Projects must meet <links to="/join">round criteria</links>.</li>
       <li>
         If you want to contribute, this is a perfect time to get
@@ -69,15 +67,15 @@
     </p>
     <h4>Need to know</h4>
     <ul>
-      <!-- TODO pull in variable here -->
-
-      <li>This phase will last xxx days.</li>
+      <li>This phase will last {{ contributionPhaseDays }} days.</li>
       <li>
         You will need to go through some
         <links to="/verify">setup</links> before you can contribute.
       </li>
-      <!-- TODO pull in variables here: max amount & native token -->
-      <li>The maximum contribution amount is 10000 DAI.</li>
+      <li>
+        The maximum contribution amount is {{ maxContributionAmount }}
+        {{ nativeTokenSymbol }}.
+      </li>
       <li>
         Your total contribution amount is final. You can't increase it by
         contributing an additional time.
@@ -97,9 +95,9 @@
     </p>
     <h4>Need to know</h4>
     <ul>
-      <!-- TODO pull in variable here -->
       <li>
-        This phase will last xxx days after the end of the contribution phase.
+        This phase will last {{ reallocationPhaseDays }} days after the end of
+        the contribution phase.
       </li>
       <li>
         If you remove projects, you must reallocate the funds to other projects
@@ -144,9 +142,41 @@
 <script lang="ts">
 import Vue from 'vue'
 import Component from 'vue-class-component'
+
+import { MAX_CONTRIBUTION_AMOUNT } from '@/api/contributions'
+
 import Links from '@/components/Links.vue'
 
-// TODO connect with state to add durations to content
 @Component({ components: { Links } })
-export default class AboutHowItWorks extends Vue {}
+export default class AboutHowItWorks extends Vue {
+  get contributionPhaseDays(): number | string {
+    if (this.$store.state.currentRound) {
+      const { signUpDeadline, startTime } = this.$store.state.currentRound
+      return Math.ceil((signUpDeadline - startTime) / (24 * 60 * 60 * 1000))
+    }
+    return 'TBD'
+  }
+
+  get maxContributionAmount(): number {
+    return MAX_CONTRIBUTION_AMOUNT
+  }
+
+  get maxRecipients(): number | undefined {
+    return this.$store.getters.maxRecipients
+  }
+
+  get nativeTokenSymbol(): string {
+    return this.$store.getters.nativeTokenSymbol
+  }
+
+  get reallocationPhaseDays(): number | string {
+    if (this.$store.state.currentRound) {
+      const { signUpDeadline, votingDeadline } = this.$store.state.currentRound
+      return Math.ceil(
+        (votingDeadline - signUpDeadline) / (24 * 60 * 60 * 1000)
+      )
+    }
+    return 'TBD'
+  }
+}
 </script>

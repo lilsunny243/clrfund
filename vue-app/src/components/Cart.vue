@@ -176,21 +176,17 @@
           <img src="@/assets/split.svg" /> Split
           {{ formatAmount(this.contribution) }} {{ tokenSymbol }} evenly
         </div>
-        <!-- TODO: should probably only appear if more than 1 item in cart -->
       </div>
       <div
         class="submit-btn-wrapper"
         v-if="
-          ($store.getters.canUserReallocate && isEditMode) ||
-          (!$store.getters.canUserReallocate &&
-            $store.getters.isRoundContributionPhase) ||
-          !$store.getters.hasUserVoted
+          (($store.getters.canUserReallocate && isEditMode) ||
+            (!$store.getters.canUserReallocate &&
+              $store.getters.isRoundContributionPhase) ||
+            !$store.getters.hasUserVoted) &&
+          cart.length >= 1
         "
       >
-        <!--  TODO: Also, add getter for pre-contribution phase -->
-        <!-- REMOVING FOR NOW WHILE WE DON'T HAVE A JOIN PHASE: <div v-if="$store.getters.isRoundJoinPhase || $store.getters.isRoundJoinOnlyPhase || $store.getters.isRoundBufferPhase">
-        Round opens for contributing in <time-left :date="$store.state.currentRound?.startTime"/>. <span v-if="canRegisterWithBrightId">Get verified with BrightID while you wait.</span>
-      </div> -->
         <div v-if="errorMessage" class="error-title">
           Can't
           <span v-if="$store.getters.canUserReallocate">reallocate</span>
@@ -237,6 +233,7 @@
           </template>
           <template v-else> Reallocate contribution </template>
         </button>
+        <funds-needed-warning :onNavigate="toggleCart" :isCompact="true" />
         <div
           class="time-left"
           v-if="$store.getters.canUserReallocate && isEditMode"
@@ -289,7 +286,12 @@
           {{ tokenSymbol }}
         </div>
       </div>
-      <!-- TODO: reallocation bar -->
+      <div v-if="!$store.state.currentRound" class="reallocation-section">
+        No current round.
+        <links v-if="isBrightIdRequired" to="/verify">
+          Verify with BrightID while you wait</links
+        >
+      </div>
     </div>
   </div>
 </template>
@@ -299,7 +301,6 @@ import Vue from 'vue'
 import Component from 'vue-class-component'
 import { BigNumber, FixedNumber } from 'ethers'
 import { parseFixed } from '@ethersproject/bignumber'
-import { commify, formatUnits } from '@ethersproject/units'
 import { DateTime } from 'luxon'
 import WalletWidget from '@/components/WalletWidget.vue'
 import ContributionModal from '@/components/ContributionModal.vue'
@@ -314,7 +315,7 @@ import {
   MAX_CART_SIZE,
   CartItem,
 } from '@/api/contributions'
-import { userRegistryType, UserRegistryType } from '@/api/core'
+import { userRegistryType, UserRegistryType, chain } from '@/api/core'
 import { RoundStatus } from '@/api/round'
 import { LOGOUT_USER, SAVE_CART } from '@/store/action-types'
 import { User } from '@/api/user'
@@ -324,7 +325,7 @@ import {
   TOGGLE_SHOW_CART_PANEL,
 } from '@/store/mutation-types'
 import { formatAmount } from '@/utils/amounts'
-import { CHAIN_INFO } from '@/plugins/Web3/constants/chains'
+import FundsNeededWarning from '@/components/FundsNeededWarning.vue'
 
 @Component({
   components: {
@@ -332,6 +333,7 @@ import { CHAIN_INFO } from '@/plugins/Web3/constants/chains'
     CartItems,
     Links,
     TimeLeft,
+    FundsNeededWarning,
   },
 })
 export default class Cart extends Vue {
@@ -414,20 +416,12 @@ export default class Cart extends Vue {
     return this.$store.state.currentUser
   }
 
-  get walletProvider(): any {
-    return this.$web3.provider
-  }
-
   get walletChainId(): number | null {
     return this.$web3.chainId
   }
 
   get supportedChainId(): number {
     return Number(process.env.VUE_APP_ETHEREUM_API_CHAINID)
-  }
-
-  get networkName(): string {
-    return CHAIN_INFO[this.supportedChainId].label
   }
 
   isCorrectNetwork(): boolean {
@@ -500,7 +494,7 @@ export default class Cart extends Vue {
     } catch {
       return false
     }
-    if (amount.lt(BigNumber.from(0))) {
+    if (amount.lte(BigNumber.from(0))) {
       return false
     }
     const normalizedValue = FixedNumber.fromValue(
@@ -558,20 +552,14 @@ export default class Cart extends Vue {
     return this.getCartTotal(this.$store.state.cart).gt(this.contribution)
   }
 
-  get balance(): string | null {
-    return (
-      commify(formatUnits(this.$store.state.currentUser?.balance, 18)) ?? null
-    )
-  }
-
   get errorMessage(): string | null {
     const currentUser = this.$store.state.currentUser
     const currentRound = this.$store.state.currentRound
     if (this.$store.getters.isMessageLimitReached)
-      return 'The limit on the number of votes has been reached'
+      return 'The limit on the number of contributions has been reached'
     if (!currentUser) return 'Please connect your wallet'
     if (!this.isCorrectNetwork())
-      return `Please change network to ${this.networkName} network.`
+      return `Please change network to ${chain.label} network.`
     if (this.isBrightIdRequired)
       return 'To contribute, you need to set up BrightID.'
     if (!this.isFormValid()) return 'Include valid contribution amount.'
@@ -582,12 +570,12 @@ export default class Cart extends Vue {
     if (this.$store.getters.hasReallocationPhaseEnded)
       return 'The funding round has ended.'
     if (currentRound.messages + this.cart.length >= currentRound.maxMessages)
-      return 'Cart changes will exceed voting capacity of this round'
+      return 'Cart changes will exceed contribution capacity of this round'
     else if (
       currentRound.messages + this.cart.length >=
       currentRound.maxMessages
     ) {
-      return 'The limit on the number of votes has been reached'
+      return 'The limit on the number of contributions has been reached'
     } else {
       const total = this.getTotal()
       if (this.contribution.isZero()) {
@@ -609,6 +597,8 @@ export default class Cart extends Vue {
           return `Not enough funds. Your balance is ${balanceDisplay} ${currentRound.nativeTokenSymbol}.`
         } else if (this.isGreaterThanMax()) {
           return `Your contribution is too generous. The max contribution is ${MAX_CONTRIBUTION_AMOUNT} ${currentRound.nativeTokenSymbol}.`
+        } else if (parseInt(currentUser.etherBalance) === 0) {
+          return `You need some ETH to pay for gas`
         } else {
           return null
         }
@@ -620,7 +610,6 @@ export default class Cart extends Vue {
           return `Your new total can't be more than your original ${this.formatAmount(
             this.contribution
           )} contribution.`
-          // TODO: need to turn this into a small number
         } else {
           return null
         }
@@ -640,16 +629,6 @@ export default class Cart extends Vue {
     return (
       userRegistryType === UserRegistryType.BRIGHT_ID &&
       !this.currentUser?.isRegistered
-    )
-  }
-  // TODO: Check that we are pre-reallocation phase
-  // Double check logic with Contribute button
-
-  canBuyWxdai(): boolean {
-    return (
-      this.$store.state.currentRound?.nativeTokenSymbol === 'WXDAI' &&
-      this.errorMessage !== null &&
-      this.errorMessage.startsWith('Your balance is')
     )
   }
 
